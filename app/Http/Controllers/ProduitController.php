@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Produit;
+use App\Models\Boutique;
 
 class ProduitController extends Controller
 {
@@ -21,7 +22,6 @@ class ProduitController extends Controller
 
         // التحقق من صحة البيانات
         $request->validate([
-            'boutique_id' => 'required|exists:boutiques,id',
             'category_id' => 'required|exists:categories,id',
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -30,11 +30,31 @@ class ProduitController extends Controller
             'marque' => 'nullable|string|max:255',
             'modele' => 'nullable|string|max:255',
             'disponible' => 'boolean',
-            'vues' => 'integer|min:0',
         ]);
 
+        // جلب Boutique ديال المستخدم الحالي
+        $boutique = Boutique::where('user_id', auth()->id())->first();
+
+        // إلى ما عندوش Boutique
+        if (!$boutique) {
+            return response()->json([
+                'message' => 'Vous devez créer une boutique avant d’ajouter un produit.'
+            ], 403);
+        }
+
         // إنشاء المنتج
-        $produit = Produit::create($request->all());
+        $produit = Produit::create([
+            'boutique_id' => $boutique->id,
+            'category_id' => $request->category_id,
+            'nom' => $request->nom,
+            'description' => $request->description,
+            'prix' => $request->prix,
+            'stock' => $request->stock,
+            'marque' => $request->marque,
+            'modele' => $request->modele,
+            'disponible' => $request->disponible ?? true,
+            'vues' => 0,
+        ]);
 
         // إرجاع النتيجة
         return response()->json([
@@ -73,7 +93,7 @@ class ProduitController extends Controller
 
         // التحقق من صحة البيانات
         $request->validate([
-            'boutique_id' => 'sometimes|exists:boutiques,id',
+            //'boutique_id' => 'sometimes|exists:boutiques,id',
             'category_id' => 'sometimes|exists:categories,id',
             'nom' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
@@ -82,11 +102,20 @@ class ProduitController extends Controller
             'marque' => 'nullable|string|max:255',
             'modele' => 'nullable|string|max:255',
             'disponible' => 'boolean',
-            'vues' => 'integer|min:0',
+           // 'vues' => 'integer|min:0',
         ]);
 
         // تحديث المنتج
-        $produit->update($request->all());
+        $produit->update([
+            'category_id' => $request->category_id ?? $produit->category_id,
+            'nom' => $request->nom ?? $produit->nom,
+            'description' => $request->description ?? $produit->description,
+            'prix' => $request->prix ?? $produit->prix,
+            'stock' => $request->stock ?? $produit->stock,
+            'marque' => $request->marque ?? $produit->marque,
+            'modele' => $request->modele ?? $produit->modele,
+            'disponible' => $request->disponible ?? $produit->disponible,
+        ]);
 
         return response()->json([
             'message' => 'Produit mis à jour avec succès',
