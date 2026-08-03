@@ -16,9 +16,11 @@ class BoutiqueController extends Controller
     // إنشاء بوتيك جديد
     public function store(Request $request)
     {
+        // التحقق من الصلاحية
+        $this->authorize('create', Boutique::class);
+
         // التحقق من صحة البيانات
         $request->validate([
-            'user_id'      => 'required|exists:users,id',
             'nom'          => 'required|string|max:255',
             'description'  => 'nullable|string',
             'telephone'    => 'required|string|max:20',
@@ -27,14 +29,25 @@ class BoutiqueController extends Controller
             'emplacement'  => 'required|string|max:255',
             'logo'         => 'nullable|string',
             'couverture'   => 'nullable|string',
-            'actif'        => 'boolean',
         ]);
 
-        $boutique = Boutique::create($request->all());
+        // إنشاء البوتيك وربطه بالمستخدم الحالي
+        $boutique = Boutique::create([
+            'user_id'      => auth()->id(),
+            'nom'          => $request->nom,
+            'description'  => $request->description,
+            'telephone'    => $request->telephone,
+            'email'        => $request->email,
+            'adresse'      => $request->adresse,
+            'emplacement'  => $request->emplacement,
+            'logo'         => $request->logo,
+            'couverture'   => $request->couverture,
+            'actif'        => true,
+        ]);
 
         return response()->json([
             'message' => 'Boutique créée avec succès',
-            'data' => $boutique
+            'data'    => $boutique
         ], 201);
     }
 
@@ -63,9 +76,11 @@ class BoutiqueController extends Controller
             ], 404);
         }
 
+        // التحقق من الصلاحية
+        $this->authorize('update', $boutique);
+
         // التحقق من صحة البيانات
         $request->validate([
-            'user_id'      => 'sometimes|exists:users,id',
             'nom'          => 'sometimes|required|string|max:255',
             'description'  => 'nullable|string',
             'telephone'    => 'sometimes|required|string|max:20',
@@ -81,7 +96,7 @@ class BoutiqueController extends Controller
 
         return response()->json([
             'message' => 'Boutique mise à jour avec succès',
-            'data' => $boutique
+            'data'    => $boutique
         ]);
     }
 
@@ -95,6 +110,9 @@ class BoutiqueController extends Controller
                 'message' => 'Boutique introuvable'
             ], 404);
         }
+
+        // التحقق من الصلاحية
+        $this->authorize('delete', $boutique);
 
         $boutique->delete();
 
