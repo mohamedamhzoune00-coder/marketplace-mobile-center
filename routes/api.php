@@ -19,7 +19,7 @@ use App\Http\Controllers\DemandeController;
 |--------------------------------------------------------------------------
 */
 
-// Test
+// Test API
 Route::get('/test', function () {
     return 'API fonctionne';
 });
@@ -28,11 +28,11 @@ Route::get('/test', function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Consultation (Visiteur)
-Route::apiResource('boutiques', BoutiqueController::class)->only([
-    'index',
-    'show'
-]);
+// Consultation
+// Public
+Route::get('/boutiques', [BoutiqueController::class, 'index']);
+Route::get('/boutiques/{boutique}', [BoutiqueController::class, 'show']);
+
 
 Route::apiResource('categories', CategoryController::class)->only([
     'index',
@@ -44,11 +44,12 @@ Route::apiResource('produits', ProduitController::class)->only([
     'show'
 ]);
 
-// Le visiteur peut envoyer une demande d'achat
+// Demandes (Visitor)
 Route::post('/demandes', [DemandeController::class, 'store']);
 
-// Le visiteur peut signaler un produit
+// Signalements (Visitor)
 Route::post('/signalements', [SignalementController::class, 'store']);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -58,31 +59,26 @@ Route::post('/signalements', [SignalementController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Utilisateur connecté
+    // Current user
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
-    Route::get('/me', function (Request $request) {
-        return $request->user();
-    });
-
-    // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Gestion Boutiques
-    Route::apiResource('boutiques', BoutiqueController::class)->except([
-        'index',
-        'show'
-    ]);
+    // Boutiques
+    Route::post('/boutiques', [BoutiqueController::class, 'store']);
+    Route::put('/boutiques/{boutique}', [BoutiqueController::class, 'update']);
+    Route::patch('/boutiques/{boutique}', [BoutiqueController::class, 'update']);
+    Route::delete('/boutiques/{boutique}', [BoutiqueController::class, 'destroy']);
 
-    // Gestion Catégories
+    // Categories
     Route::apiResource('categories', CategoryController::class)->except([
         'index',
         'show'
     ]);
 
-    // Gestion Produits
+    // Produits
     Route::apiResource('produits', ProduitController::class)->except([
         'index',
         'show'
@@ -91,19 +87,20 @@ Route::middleware('auth:sanctum')->group(function () {
     // Images Produits
     Route::apiResource('images-produits', ImagesProduitController::class);
 
-    // Horaires Boutique
+    // Horaires
     Route::apiResource('horaires-boutiques', HorairesBoutiqueController::class);
 
-    // Journaux d'audit
-    Route::apiResource('journaux-audit', JournalAuditController::class);
-
-    // Gestion des demandes
+    // Demandes
     Route::apiResource('demandes', DemandeController::class)->except([
         'store'
     ]);
 
-    // Gestion des signalements
+    // Signalements
     Route::apiResource('signalements', SignalementController::class)->except([
         'store'
     ]);
+
+    // Journaux Audit
+    Route::get('/journaux-audit', [JournalAuditController::class, 'index']);
+    Route::get('/journaux-audit/{journalAudit}', [JournalAuditController::class, 'show']);
 });

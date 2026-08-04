@@ -8,6 +8,8 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use App\Models\Produit;
 use App\Policies\ProduitPolicy;
+use App\Models\ImagesProduit;
+use App\Policies\ImagesProduitPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Boutique::class => BoutiquePolicy::class,
         Produit::class => ProduitPolicy::class,
+        ImagesProduit::class => ImagesProduitPolicy::class,
     ];
 
     /**
