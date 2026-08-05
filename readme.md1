@@ -1,0 +1,52 @@
+# Marketplace Mobile Center Roadmap
+
+## Setup
+- [x] Laravel
+- [x] Database
+- [x] Migrations
+
+## Models
+- [x] User
+- [x] Boutique
+- [x] Produit
+- [x] Category
+- [x] ImagesProduit
+- [x] HorairesBoutique
+- [x] Demande
+- [x] Signalement
+- [x] JournalAudit
+
+## Authentication
+- [x] Register
+- [x] Login
+- [x] Logout
+
+## Authorization
+- [x] BoutiquePolicy
+- [x] ProduitPolicy
+- [x] ImagesProduitPolicy
+- [x] DemandePolicy
+
+## Controllers
+- [x] BoutiqueController
+- [x] ProduitController
+- [ ] ImagesProduitController
+- [ ] DemandeController
+- [ ] SignalementController
+- [ ] HorairesBoutiqueController
+- [ ] JournalAuditController
+
+## Upload Images
+- [ ] Upload
+- [ ] Delete
+
+## API
+- [ ] Search
+- [ ] Filter
+- [ ] Pagination
+
+## Dashboard
+- [ ] Statistics
+
+## Frontend
+- [ ] React/Vue

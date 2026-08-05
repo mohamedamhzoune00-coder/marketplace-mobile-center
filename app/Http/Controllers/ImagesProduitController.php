@@ -16,6 +16,10 @@ class ImagesProduitController extends Controller
     // إضافة صورة جديدة
     public function store(Request $request)
     {
+        // التحقق من الصلاحية
+        $this->authorize('create', ImagesProduit::class);
+
+        // التحقق من صحة البيانات
         $request->validate([
             'produit_id' => 'required|exists:produits,id',
             'chemin' => 'required|string',
@@ -23,7 +27,13 @@ class ImagesProduitController extends Controller
             'ordre' => 'integer|min:0',
         ]);
 
-        $image = ImagesProduit::create($request->all());
+        // إنشاء الصورة
+        $image = ImagesProduit::create([
+            'produit_id' => $request->produit_id,
+            'chemin' => $request->chemin,
+            'principale' => $request->principale ?? false,
+            'ordre' => $request->ordre ?? 0,
+        ]);
 
         return response()->json([
             'message' => 'Image ajoutée avec succès',
@@ -56,14 +66,22 @@ class ImagesProduitController extends Controller
             ], 404);
         }
 
+        // التحقق من الصلاحية
+        $this->authorize('update', $image);
+
+        // التحقق من صحة البيانات
         $request->validate([
-            'produit_id' => 'sometimes|exists:produits,id',
             'chemin' => 'nullable|string',
             'principale' => 'boolean',
             'ordre' => 'integer|min:0',
         ]);
 
-        $image->update($request->all());
+        // تحديث الصورة
+        $image->update([
+            'chemin' => $request->chemin ?? $image->chemin,
+            'principale' => $request->principale ?? $image->principale,
+            'ordre' => $request->ordre ?? $image->ordre,
+        ]);
 
         return response()->json([
             'message' => 'Image mise à jour avec succès',
@@ -81,7 +99,7 @@ class ImagesProduitController extends Controller
                 'message' => 'Image introuvable'
             ], 404);
         }
-
+        $this->authorize('delete', $image);
         $image->delete();
 
         return response()->json([

@@ -11,12 +11,13 @@ class DemandeController extends Controller
     // عرض جميع الطلبات
     public function index()
     {
-        return Demande::with(['produit', 'boutique'])->get();
+        return Demande::with(['produit', 'boutique'])->paginate(10);
     }
 
     // إنشاء طلب جديد
     public function store(Request $request)
     {
+        $this->authorize('create', Demande::class);
         $request->validate([
             'produit_id' => 'required|exists:produits,id',
             'nom_client' => 'required|string|max:255',
@@ -24,20 +25,22 @@ class DemandeController extends Controller
             'email' => 'nullable|email|max:255',
             'quantite' => 'required|integer|min:1',
             'message' => 'nullable|string',
-            'statut' => 'in:en_attente,acceptee,refusee',
+            // 'statut' => 'in:en_attente,acceptee,refusee',
         ]);
 
         // جلب المنتج
         $produit = Produit::findOrFail($request->produit_id);
 
-        // البيانات المرسلة
-        $data = $request->all();
-
-        // جلب البوتيك تلقائياً من المنتج
-        $data['boutique_id'] = $produit->boutique_id;
-
-        // إنشاء الطلب
-        $demande = Demande::create($data);
+        $demande = Demande::create([
+            'produit_id'  => $produit->id,
+            'boutique_id' => $produit->boutique_id,
+            'nom_client'  => $request->nom_client,
+            'telephone'   => $request->telephone,
+            'email'       => $request->email,
+            'quantite'    => $request->quantite,
+            'message'     => $request->message,
+            'statut'      => 'en_attente',
+        ]);
 
         return response()->json([
             'message' => 'Demande créée avec succès',
@@ -48,7 +51,7 @@ class DemandeController extends Controller
     // عرض طلب واحد
     public function show($id)
     {
-        $demande = Demande::with(['produit', 'boutique'])->find($id);
+        $demande = Demande::with(['produit', 'boutique'])->findOrFail($id);
 
         if (!$demande) {
             return response()->json([
@@ -69,6 +72,7 @@ class DemandeController extends Controller
                 'message' => 'Demande introuvable'
             ], 404);
         }
+        $this->authorize('update', $demande);
 
         $request->validate([
             'produit_id' => 'sometimes|exists:produits,id',
@@ -77,18 +81,24 @@ class DemandeController extends Controller
             'email' => 'nullable|email|max:255',
             'quantite' => 'sometimes|integer|min:1',
             'message' => 'nullable|string',
-            'statut' => 'sometimes|in:en_attente,acceptee,refusee',
+            // الزائر ما خاصوش يحدد الحالة
+            // الحالة غادي تكون دائما en_attente
         ]);
 
-        $data = $request->all();
-
-        // إذا تبدل المنتج، تبدل البوتيك تلقائياً
         if ($request->has('produit_id')) {
             $produit = Produit::findOrFail($request->produit_id);
-            $data['boutique_id'] = $produit->boutique_id;
+
+            $demande->produit_id = $produit->id;
+            $demande->boutique_id = $produit->boutique_id;
         }
 
-        $demande->update($data);
+        $demande->nom_client = $request->nom_client ?? $demande->nom_client;
+        $demande->telephone = $request->telephone ?? $demande->telephone;
+        $demande->email = $request->email ?? $demande->email;
+        $demande->quantite = $request->quantite ?? $demande->quantite;
+        $demande->message = $request->message ?? $demande->message;
+
+        $demande->save();
 
         return response()->json([
             'message' => 'Demande mise à jour avec succès',
@@ -106,7 +116,7 @@ class DemandeController extends Controller
                 'message' => 'Demande introuvable'
             ], 404);
         }
-
+        $this->authorize('delete', $demande);
         $demande->delete();
 
         return response()->json([
