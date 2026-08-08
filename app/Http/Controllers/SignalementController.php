@@ -10,20 +10,28 @@ class SignalementController extends Controller
     // عرض جميع البلاغات
     public function index()
     {
-        return Signalement::with(['user', 'produit'])->get();
+        $this->authorize('viewAny', Signalement::class);
+
+        return Signalement::with(['user', 'produit'])->paginate(10);
     }
 
     // إنشاء بلاغ جديد
     public function store(Request $request)
     {
+        
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'produit_id' => 'required|exists:produits,id',
             'raison' => 'required|string',
-            'statut' => 'in:en_attente,accepte,refuse',
         ]);
 
-        $signalement = Signalement::create($request->all());
+        $signalement = Signalement::create([
+            'user_id' => $request->user_id,
+            'produit_id' => $request->produit_id,
+            'raison' => $request->raison,
+            'statut' => 'en_attente',
+        ]);
 
         return response()->json([
             'message' => 'Signalement créé avec succès',
@@ -34,6 +42,7 @@ class SignalementController extends Controller
     // عرض بلاغ واحد
     public function show($id)
     {
+
         $signalement = Signalement::with(['user', 'produit'])->find($id);
 
         if (!$signalement) {
@@ -41,14 +50,14 @@ class SignalementController extends Controller
                 'message' => 'Signalement introuvable'
             ], 404);
         }
-
+        $this->authorize('view', $signalement);
         return response()->json($signalement);
     }
 
     // تعديل بلاغ
     public function update(Request $request, $id)
     {
-        $signalement = Signalement::with(['user', 'produit'])->find($id);
+        $signalement = Signalement::find($id);
 
         if (!$signalement) {
             return response()->json([
@@ -56,14 +65,17 @@ class SignalementController extends Controller
             ], 404);
         }
 
+        $this->authorize('update', $signalement);
+
         $request->validate([
-            'user_id' => 'sometimes|exists:users,id',
-            'produit_id' => 'sometimes|exists:produits,id',
             'raison' => 'nullable|string',
             'statut' => 'sometimes|in:en_attente,accepte,refuse',
         ]);
 
-        $signalement->update($request->all());
+        $signalement->raison = $request->raison ?? $signalement->raison;
+        $signalement->statut = $request->statut ?? $signalement->statut;
+
+        $signalement->save();
 
         return response()->json([
             'message' => 'Signalement mis à jour avec succès',
@@ -81,7 +93,7 @@ class SignalementController extends Controller
                 'message' => 'Signalement introuvable'
             ], 404);
         }
-
+        $this->authorize('delete', $signalement);
         $signalement->delete();
 
         return response()->json([

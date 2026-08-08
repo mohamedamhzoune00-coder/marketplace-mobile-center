@@ -30,11 +30,11 @@
 ## Controllers
 - [x] BoutiqueController
 - [x] ProduitController
-- [ ] ImagesProduitController
-- [ ] DemandeController
-- [ ] SignalementController
-- [ ] HorairesBoutiqueController
-- [ ] JournalAuditController
+- [X] ImagesProduitController
+- [X] DemandeController
+- [X] SignalementController
+- [X] HorairesBoutiqueController
+- [X] JournalAuditController
 
 ## Upload Images
 - [ ] Upload

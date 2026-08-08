@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
-
 class AuthController extends Controller
 {
     // Register
@@ -18,25 +17,24 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
             'telephone' => 'nullable|string|max:20',
-            'role' => 'in:super_admin,vendeur',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'telephone' => $request->telephone,
-            'role' => $request->role ?? 'vendeur',
-            'actif' => true,
+            'name'       => $request->name,
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
+            'telephone'  => $request->telephone,
+            'role'       => 'vendeur', // أي مستخدم جديد كيولي vendeur
+            'actif'      => true,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Utilisateur créé avec succès',
-            'user' => $user,
-            'token' => $token,
-            'token_type' => 'Bearer'
+            'message'    => 'Utilisateur créé avec succès',
+            'user'       => $user,
+            'token'      => $token,
+            'token_type' => 'Bearer',
         ], 201);
     }
 
@@ -44,25 +42,31 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required',
         ]);
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'message' => 'Email ou mot de passe incorrect'
+                'message' => 'Email ou mot de passe incorrect',
             ], 401);
         }
 
         $user = Auth::user();
 
+        if (!$user->actif) {
+            return response()->json([
+                'message' => 'Votre compte est désactivé',
+            ], 403);
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Connexion réussie',
-            'user' => $user,
-            'token' => $token,
-            'token_type' => 'Bearer'
+            'message'    => 'Connexion réussie',
+            'user'       => $user,
+            'token'      => $token,
+            'token_type' => 'Bearer',
         ]);
     }
 
@@ -72,7 +76,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Déconnexion réussie'
+            'message' => 'Déconnexion réussie',
         ]);
     }
 }

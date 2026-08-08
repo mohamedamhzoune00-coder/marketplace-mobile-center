@@ -10,12 +10,15 @@ class HorairesBoutiqueController extends Controller
     // عرض جميع المواعيد
     public function index()
     {
-        return HorairesBoutique::all();
-    }
+        $this->authorize('viewAny', HorairesBoutique::class);
 
+        return HorairesBoutique::paginate(10);
+    }
     // إضافة موعد جديد
     public function store(Request $request)
     {
+        $this->authorize('create', HorairesBoutique::class);
+
         $request->validate([
             'boutique_id' => 'required|exists:boutiques,id',
             'jour' => 'required|string|max:20',
@@ -24,7 +27,13 @@ class HorairesBoutiqueController extends Controller
             'ferme' => 'boolean',
         ]);
 
-        $horaire = HorairesBoutique::create($request->all());
+        $horaire = HorairesBoutique::create([
+            'boutique_id' => $request->boutique_id,
+            'jour' => $request->jour,
+            'heure_ouverture' => $request->heure_ouverture,
+            'heure_fermeture' => $request->heure_fermeture,
+            'ferme' => $request->ferme ?? false,
+        ]);
 
         return response()->json([
             'message' => 'Horaire créé avec succès',
@@ -43,9 +52,10 @@ class HorairesBoutiqueController extends Controller
             ], 404);
         }
 
+        $this->authorize('view', $horaire);
+
         return response()->json($horaire);
     }
-
     // تعديل موعد
     public function update(Request $request, $id)
     {
@@ -57,15 +67,21 @@ class HorairesBoutiqueController extends Controller
             ], 404);
         }
 
+        $this->authorize('update', $horaire);
+
         $request->validate([
-            'boutique_id' => 'sometimes|exists:boutiques,id',
-            'jour' => 'sometimes|required|string|max:20',
+            'jour' => 'sometimes|string|max:20',
             'heure_ouverture' => 'nullable',
             'heure_fermeture' => 'nullable',
             'ferme' => 'boolean',
         ]);
 
-        $horaire->update($request->all());
+        $horaire->jour = $request->jour ?? $horaire->jour;
+        $horaire->heure_ouverture = $request->heure_ouverture ?? $horaire->heure_ouverture;
+        $horaire->heure_fermeture = $request->heure_fermeture ?? $horaire->heure_fermeture;
+        $horaire->ferme = $request->ferme ?? $horaire->ferme;
+
+        $horaire->save();
 
         return response()->json([
             'message' => 'Horaire mis à jour avec succès',
@@ -83,6 +99,8 @@ class HorairesBoutiqueController extends Controller
                 'message' => 'Horaire introuvable'
             ], 404);
         }
+
+        $this->authorize('delete', $horaire);
 
         $horaire->delete();
 

@@ -11,7 +11,11 @@ class ProduitController extends Controller
     // عرض جميع المنتجات
     public function index()
     {
-        return Produit::all();
+        $this->authorize('viewAny', Produit::class);
+
+        return Produit::with(['boutique', 'category'])
+            ->orderBy('id', 'desc')
+            ->paginate(10);
     }
 
     // إنشاء منتج جديد
@@ -66,7 +70,7 @@ class ProduitController extends Controller
     // عرض منتج واحد
     public function show($id)
     {
-        $produit = Produit::find($id);
+        $produit = Produit::with(['boutique', 'category'])->find($id);
 
         if (!$produit) {
             return response()->json([
@@ -74,7 +78,11 @@ class ProduitController extends Controller
             ], 404);
         }
 
-        return response()->json($produit);
+        $this->authorize('view', $produit);
+
+        return response()->json(
+            $produit->load(['boutique', 'category', 'images'])
+        );
     }
 
     // تعديل منتج
@@ -93,7 +101,6 @@ class ProduitController extends Controller
 
         // التحقق من صحة البيانات
         $request->validate([
-            //'boutique_id' => 'sometimes|exists:boutiques,id',
             'category_id' => 'sometimes|exists:categories,id',
             'nom' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
@@ -102,27 +109,25 @@ class ProduitController extends Controller
             'marque' => 'nullable|string|max:255',
             'modele' => 'nullable|string|max:255',
             'disponible' => 'boolean',
-           // 'vues' => 'integer|min:0',
         ]);
 
         // تحديث المنتج
-        $produit->update([
-            'category_id' => $request->category_id ?? $produit->category_id,
-            'nom' => $request->nom ?? $produit->nom,
-            'description' => $request->description ?? $produit->description,
-            'prix' => $request->prix ?? $produit->prix,
-            'stock' => $request->stock ?? $produit->stock,
-            'marque' => $request->marque ?? $produit->marque,
-            'modele' => $request->modele ?? $produit->modele,
-            'disponible' => $request->disponible ?? $produit->disponible,
-        ]);
+        $produit->category_id = $request->category_id ?? $produit->category_id;
+        $produit->nom = $request->nom ?? $produit->nom;
+        $produit->description = $request->description ?? $produit->description;
+        $produit->prix = $request->prix ?? $produit->prix;
+        $produit->stock = $request->stock ?? $produit->stock;
+        $produit->marque = $request->marque ?? $produit->marque;
+        $produit->modele = $request->modele ?? $produit->modele;
+        $produit->disponible = $request->disponible ?? $produit->disponible;
+
+        $produit->save();
 
         return response()->json([
             'message' => 'Produit mis à jour avec succès',
             'data' => $produit
         ]);
     }
-
     // حذف منتج
     public function destroy($id)
     {

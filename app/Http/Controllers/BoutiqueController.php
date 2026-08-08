@@ -10,7 +10,8 @@ class BoutiqueController extends Controller
     // عرض جميع البوتيكات
     public function index()
     {
-        return Boutique::all();
+          $this->authorize('viewAny', Boutique::class);
+        return Boutique::paginate(10);
     }
 
     // إنشاء بوتيك جديد
@@ -62,6 +63,8 @@ class BoutiqueController extends Controller
             ], 404);
         }
 
+        $this->authorize('view', $boutique);
+
         return response()->json($boutique);
     }
 
@@ -92,7 +95,17 @@ class BoutiqueController extends Controller
             'actif'        => 'boolean',
         ]);
 
-        $boutique->update($request->all());
+        $boutique->nom = $request->nom ?? $boutique->nom;
+        $boutique->description = $request->description ?? $boutique->description;
+        $boutique->telephone = $request->telephone ?? $boutique->telephone;
+        $boutique->email = $request->email ?? $boutique->email;
+        $boutique->adresse = $request->adresse ?? $boutique->adresse;
+        $boutique->emplacement = $request->emplacement ?? $boutique->emplacement;
+        $boutique->logo = $request->logo ?? $boutique->logo;
+        $boutique->couverture = $request->couverture ?? $boutique->couverture;
+        $boutique->actif = $request->actif ?? $boutique->actif;
+
+        $boutique->save();
 
         return response()->json([
             'message' => 'Boutique mise à jour avec succès',
