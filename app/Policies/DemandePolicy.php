@@ -10,43 +10,68 @@ class DemandePolicy
 {
     use HandlesAuthorization;
 
-    // أي مستخدم مسجل يقدر يشوف الطلبات ديالو
+    // عرض لائحة الطلبات:
+    // Vendeur يقدر يشوف الطلبات ديال boutique ديالو
+    // Super Admin يقدر يشوف جميع الطلبات
+    // Visiteur ما يقدرش يشوف لائحة الطلبات كاملة
     public function viewAny(User $user)
     {
-        return true;
+        return $user->role === 'vendeur'
+            || $user->role === 'super_admin';
     }
 
-    // Super Admin أو صاحب الطلب
+    // عرض طلب واحد:
+    // Super Admin يقدر يشوف أي demande
+    // Visiteur يقدر يشوف غير demande ديالو
+    // Vendeur يقدر يشوف غير الطلبات ديال boutique ديالو
     public function view(User $user, Demande $demande)
     {
         return $user->role === 'super_admin'
-            || $user->id === $demande->user_id;
+            || $user->id === $demande->user_id
+            || (
+                $user->role === 'vendeur'
+                && $user->boutique
+                && $user->boutique->id === $demande->boutique_id
+            );
     }
 
-    // غير Visitor يقدر ينشئ طلب شراء
+    // إنشاء طلب شراء:
+    // غير Visiteur هو اللي يقدر يدير Demande
     public function create(User $user)
     {
         return $user->role === 'visiteur';
     }
 
-    // غير صاحب الطلب يقدر يعدلو
+    // تعديل الطلب:
+    // Visiteur يقدر يعدل غير الطلب ديالو
+    // وضروري الطلب يكون مازال en_attente
+    // منين vendeur يقبلو أو يرفضو، ما يبقاش visitor يقدر يبدلو
     public function update(User $user, Demande $demande)
     {
-        return $user->id === $demande->user_id;
+        return $user->role === 'visiteur'
+            && $user->id === $demande->user_id
+            && $demande->statut === 'en_attente';
     }
 
-    // غير صاحب الطلب أو Super Admin يقدر يحذف
+    // حذف الطلب:
+    // Visiteur يقدر يحذف غير الطلب ديالو
+    // وضروري يكون مازال en_attente
     public function delete(User $user, Demande $demande)
     {
-        return $user->role === 'super_admin'
-            || $user->id === $demande->user_id;
+        return $user->role === 'visiteur'
+            && $user->id === $demande->user_id
+            && $demande->statut === 'en_attente';
     }
 
+    // استرجاع الطلب المحذوف
+    // حالياً ما عندناش هاد fonctionnalité
     public function restore(User $user, Demande $demande)
     {
         return false;
     }
 
+    // حذف نهائي
+    // حالياً ما بغيناش نستعملوه
     public function forceDelete(User $user, Demande $demande)
     {
         return false;

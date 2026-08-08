@@ -5,15 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Produit;
-use App\Models\Boutique;
-
 class Demande extends Model
 {
     use HasFactory;
 
-    // هاد الأعمدة لي Laravel يقدر يعمرهم عبر create() و update()
     protected $fillable = [
+        'user_id',
         'produit_id',
         'boutique_id',
         'nom_client',
@@ -24,16 +21,21 @@ class Demande extends Model
         'statut',
     ];
 
-    // العلاقة: الطلب تابع لمنتج واحد
+    // الطلب تابع للمستخدم لي دارو
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // الطلب تابع لمنتج واحد
     public function produit()
     {
         return $this->belongsTo(Produit::class);
     }
 
-    // العلاقة: الطلب تابع لبوتيك واحد
+    // الطلب تابع لبوتيك واحد
     public function boutique()
     {
         return $this->belongsTo(Boutique::class);
     }
-    
 }

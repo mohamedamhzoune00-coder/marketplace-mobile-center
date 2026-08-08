@@ -8,11 +8,37 @@ use App\Models\Produit;
 
 class DemandeController extends Controller
 {
-    // عرض جميع الطلبات
-    public function index()
-    {
-        return Demande::with(['produit', 'boutique'])->paginate(10);
+   // عرض الطلبات
+public function index()
+{
+    // التحقق من الصلاحية
+    $this->authorize('viewAny', Demande::class);
+
+    // جلب المستخدم الحالي
+    $user = auth()->user();
+
+    // Super Admin يقدر يشوف جميع الطلبات
+    if ($user->role === 'super_admin') {
+
+        return Demande::with(['produit', 'boutique', 'user'])
+            ->orderBy('id', 'desc')
+            ->paginate(10);
     }
+
+    // Vendeur يشوف غير الطلبات ديال Boutique ديالو
+    if ($user->role === 'vendeur') {
+
+        return Demande::with(['produit', 'boutique', 'user'])
+            ->where('boutique_id', $user->boutique->id)
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+    }
+
+    // احتياطياً، إلا وصل شي role آخر لهنا
+    return response()->json([
+        'message' => 'Accès non autorisé'
+    ], 403);
+}
 
     // إنشاء طلب جديد
     public function store(Request $request)
@@ -40,6 +66,7 @@ class DemandeController extends Controller
             'quantite'    => $request->quantite,
             'message'     => $request->message,
             'statut'      => 'en_attente',
+            'user_id' => auth()->id(),
         ]);
 
         return response()->json([
