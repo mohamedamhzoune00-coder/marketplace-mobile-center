@@ -1,0 +1,2178 @@
+﻿
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\Boutique.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\HorairesBoutique;
+use App\Models\Demande;
+
+class Boutique extends Model
+{
+    use HasFactory;
+
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù…Ø³Ù…ÙˆØ­ Ù„Ù€ Laravel ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¨Ø§Ø³ØªØ¹Ù…Ø§Ù„ create() Ùˆ update()
+    protected $fillable = [
+
+        // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù…Ø³Ù…ÙˆØ­ Ù„Ù€ Laravel ÙŠØ¹Ù…Ø±Ù‡Ù…
+        'user_id',
+        'nom',
+        'description',
+        'telephone',
+        'email',
+        'adresse',
+        'emplacement',
+        'logo',
+        'couverture',
+        'actif',
+
+    ];
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ø¨ÙˆØªÙŠÙƒ ØªØ§Ø¨Ø¹ Ù„Ù…Ø³ØªØ®Ø¯Ù… ÙˆØ§Ø­Ø¯
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ø§Ù„Ø¨ÙˆØªÙŠÙƒ Ø¹Ù†Ø¯Ùˆ Ø¨Ø²Ø§Ù Ø¯ÙŠØ§Ù„ Ø£ÙˆÙ‚Ø§Øª Ø§Ù„Ø¹Ù…Ù„
+    public function horaires()
+    {
+        return $this->hasMany(HorairesBoutique::class);
+    }
+    public function demandes()
+{
+    return $this->hasMany(Demande::class);
+}
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\Category.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Produit;
+
+class Category extends Model
+{
+    use HasFactory;
+
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù…Ø³Ù…ÙˆØ­ Ù„Ù€ Laravel ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¨Ø§Ø³ØªØ¹Ù…Ø§Ù„ create() Ùˆ update()
+    protected $fillable = [
+
+        'nom',
+        'description',
+        'parent_id',
+        'ordre',
+        'actif',
+
+    ];
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Category ÙˆØ­Ø¯Ø© ÙÙŠÙ‡Ø§ Ø¨Ø²Ø§Ù Ø¯ÙŠØ§Ù„ Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª
+    public function produits()
+    {
+        return $this->hasMany(Produit::class);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\Demande.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Demande extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'produit_id',
+        'boutique_id',
+        'nom_client',
+        'telephone',
+        'email',
+        'quantite',
+        'message',
+        'statut',
+    ];
+
+    // Ø§Ù„Ø·Ù„Ø¨ ØªØ§Ø¨Ø¹ Ù„Ù„Ù…Ø³ØªØ®Ø¯Ù… Ù„ÙŠ Ø¯Ø§Ø±Ùˆ
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Ø§Ù„Ø·Ù„Ø¨ ØªØ§Ø¨Ø¹ Ù„Ù…Ù†ØªØ¬ ÙˆØ§Ø­Ø¯
+    public function produit()
+    {
+        return $this->belongsTo(Produit::class);
+    }
+
+    // Ø§Ù„Ø·Ù„Ø¨ ØªØ§Ø¨Ø¹ Ù„Ø¨ÙˆØªÙŠÙƒ ÙˆØ§Ø­Ø¯
+    public function boutique()
+    {
+        return $this->belongsTo(Boutique::class);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\HorairesBoutique.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Boutique;
+class HorairesBoutique extends Model
+{
+    use HasFactory;
+    protected $table = 'horaires_boutique';
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù„ÙŠ Laravel ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¹Ø¨Ø± create() Ùˆ update()
+    protected $fillable = [
+        'boutique_id',
+        'jour',
+        'heure_ouverture',
+        'heure_fermeture',
+        'ferme',
+    ];
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ø³Ø§Ø¹Ø§Øª ÙƒØªØ±Ø¬Ø¹ Ù„Ø¨ÙˆØªÙŠÙƒ ÙˆØ§Ø­Ø¯
+public function boutique()
+{
+    return $this->belongsTo(Boutique::class);
+}
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\ImagesProduit.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Produit;
+
+class ImagesProduit extends Model
+{
+    use HasFactory;
+
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù„ÙŠ Laravel ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¹Ø¨Ø± create() Ùˆ update()
+    protected $fillable = [
+        'produit_id',
+        'chemin',
+        'principale',
+        'ordre',
+    ];
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„ØµÙˆØ±Ø© ÙƒØªØ±Ø¬Ø¹ Ù„Ù…Ù†ØªØ¬ ÙˆØ­ÙŠØ¯
+    public function produit()
+    {
+        return $this->belongsTo(Produit::class);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\JournalAudit.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+
+class JournalAudit extends Model
+{
+    use HasFactory;
+    protected $table = 'journaux_audit';
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù„ÙŠ Laravel ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¹Ø¨Ø± create() Ùˆ update()
+    protected $fillable = [
+        'user_id',
+        'action',
+        'table_concernee',
+        'record_id',
+        'details',
+        'ip_address',
+        'user_agent',
+    ];
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ø¹Ù…Ù„ÙŠØ© ØªØ§Ø¨Ø¹Ø© Ù„Ù…Ø³ØªØ®Ø¯Ù… ÙˆØ§Ø­Ø¯
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\Produit.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Boutique;
+use App\Models\Category;
+use App\Models\ImagesProduit;
+use App\Models\StatistiqueVue;
+use App\Models\Signalement;
+use App\Models\Demande;
+
+class Produit extends Model
+{
+    use HasFactory;
+
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù„ÙŠ Laravel ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¹Ø¨Ø± create() Ùˆ update()
+    protected $fillable = [
+        'boutique_id',
+        'category_id',
+        'nom',
+        'description',
+        'prix',
+        'stock',
+        'marque',
+        'modele',
+        'disponible',
+        'vues',
+    ];
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ù…Ù†ØªØ¬ ÙƒÙŠØ±Ø¬Ø¹ Ù„Ø¨ÙˆØªÙŠÙƒ ÙˆØ­Ø¯Ø© Ø¨Ø±Ùƒ
+    public function boutique()
+    {
+        return $this->belongsTo(Boutique::class);
+    }
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ù…Ù†ØªØ¬ ØªØ§Ø¨Ø¹ Ù„Ù€ Category ÙˆØ­Ø¯Ø© Ø¨Ø±Ùƒ
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ù…Ù†ØªØ¬ Ø¹Ù†Ø¯Ùˆ Ø¨Ø²Ø§Ù Ø¯ÙŠØ§Ù„ Ø§Ù„ØµÙˆØ±
+    public function images()
+    {
+        return $this->hasMany(ImagesProduit::class);
+    }
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ø§Ù„Ù…Ù†ØªØ¬ Ø¹Ù†Ø¯Ùˆ Ø¨Ø²Ø§Ù Ø¯ÙŠØ§Ù„ Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª
+    public function statistiques()
+    {
+        return $this->hasMany(StatistiqueVue::class);
+    }
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ø§Ù„Ù…Ù†ØªØ¬ ÙŠÙ‚Ø¯Ø± ÙŠÙƒÙˆÙ† Ø¹Ù†Ø¯Ùˆ Ø¨Ø²Ø§Ù Ø¯ÙŠØ§Ù„ Ø§Ù„Ø¨Ù„Ø§ØºØ§Øª
+    public function signalements()
+    {
+        return $this->hasMany(Signalement::class);
+    }
+    public function demandes()
+{
+    return $this->hasMany(Demande::class);
+}
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\Signalement.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Produit;
+
+class Signalement extends Model
+{
+    use HasFactory;
+
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù„ÙŠ Laravel ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¹Ø¨Ø± create() Ùˆ update()
+    protected $fillable = [
+        'user_id',
+        'produit_id',
+        'raison',
+        'statut',
+    ];
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ø¨Ù„Ø§Øº ØªØ§Ø¨Ø¹ Ù„Ù…Ø³ØªØ®Ø¯Ù… ÙˆØ§Ø­Ø¯
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ø¨Ù„Ø§Øº ØªØ§Ø¨Ø¹ Ù„Ù…Ù†ØªØ¬ ÙˆØ§Ø­Ø¯
+    public function produit()
+    {
+        return $this->belongsTo(Produit::class);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\StatistiqueVue.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Produit;
+
+class StatistiqueVue extends Model
+{
+    use HasFactory;
+
+    // Ù‡Ø§Ø¯ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ù„ÙŠ Laravel ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ù…Ø±Ù‡Ù… Ø¹Ø¨Ø± create() Ùˆ update()
+    protected $fillable = [
+        'produit_id',
+        'date',
+        'nombre_vues',
+    ];
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ù‡Ø§Ø¯ Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ© ØªØ§Ø¨Ø¹Ø© Ù„Ù…Ù†ØªØ¬ ÙˆØ§Ø­Ø¯
+    public function produit()
+    {
+        return $this->belongsTo(Produit::class);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Models\User.php =====
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+use App\Models\Boutique;
+use App\Models\Signalement;
+use App\Models\JournalAudit;
+
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'telephone',
+        'actif',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¹Ù†Ø¯Ùˆ Boutique ÙˆØ­Ø¯Ø©
+    public function boutique()
+    {
+        return $this->hasOne(Boutique::class);
+    }
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… ÙŠÙ‚Ø¯Ø± ÙŠØ¯ÙŠØ± Ø¨Ø²Ø§Ù Ø¯ÙŠØ§Ù„ Ø§Ù„Ø¨Ù„Ø§ØºØ§Øª
+    public function signalements()
+    {
+        return $this->hasMany(Signalement::class);
+    }
+
+    // Ø§Ù„Ø¹Ù„Ø§Ù‚Ø©: Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¹Ù†Ø¯Ùˆ Ø¨Ø²Ø§Ù Ø¯ÙŠØ§Ù„ Ø§Ù„Ø¹Ù…Ù„ÙŠØ§Øª
+    public function journauxAudit()
+    {
+        return $this->hasMany(JournalAudit::class);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\AuthController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+
+class AuthController extends Controller
+{
+    // Register
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+            'telephone' => 'nullable|string|max:20',
+        ]);
+
+        $user = User::create([
+            'name'       => $request->name,
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
+            'telephone'  => $request->telephone,
+            'role'       => 'vendeur', // Ø£ÙŠ Ù…Ø³ØªØ®Ø¯Ù… Ø¬Ø¯ÙŠØ¯ ÙƒÙŠÙˆÙ„ÙŠ vendeur
+            'actif'      => true,
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message'    => 'Utilisateur crÃ©Ã© avec succÃ¨s',
+            'user'       => $user,
+            'token'      => $token,
+            'token_type' => 'Bearer',
+        ], 201);
+    }
+
+    // Login
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Email ou mot de passe incorrect',
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        if (!$user->actif) {
+            return response()->json([
+                'message' => 'Votre compte est dÃ©sactivÃ©',
+            ], 403);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message'    => 'Connexion rÃ©ussie',
+            'user'       => $user,
+            'token'      => $token,
+            'token_type' => 'Bearer',
+        ]);
+    }
+
+    // Logout
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'DÃ©connexion rÃ©ussie',
+        ]);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\BoutiqueController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Boutique;
+
+class BoutiqueController extends Controller
+{
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø¨ÙˆØªÙŠÙƒØ§Øª
+    public function index()
+    {
+          $this->authorize('viewAny', Boutique::class);
+        return Boutique::paginate(10);
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ Ø¨ÙˆØªÙŠÙƒ Ø¬Ø¯ÙŠØ¯
+    public function store(Request $request)
+    {
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('create', Boutique::class);
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† ØµØ­Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+        $request->validate([
+            'nom'          => 'required|string|max:255',
+            'description'  => 'nullable|string',
+            'telephone'    => 'required|string|max:20',
+            'email'        => 'nullable|email|max:255',
+            'adresse'      => 'required|string|max:255',
+            'emplacement'  => 'required|string|max:255',
+            'logo'         => 'nullable|string',
+            'couverture'   => 'nullable|string',
+        ]);
+
+        // Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø¨ÙˆØªÙŠÙƒ ÙˆØ±Ø¨Ø·Ù‡ Ø¨Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø§Ù„Ø­Ø§Ù„ÙŠ
+        $boutique = Boutique::create([
+            'user_id'      => auth()->id(),
+            'nom'          => $request->nom,
+            'description'  => $request->description,
+            'telephone'    => $request->telephone,
+            'email'        => $request->email,
+            'adresse'      => $request->adresse,
+            'emplacement'  => $request->emplacement,
+            'logo'         => $request->logo,
+            'couverture'   => $request->couverture,
+            'actif'        => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Boutique crÃ©Ã©e avec succÃ¨s',
+            'data'    => $boutique
+        ], 201);
+    }
+
+    // Ø¹Ø±Ø¶ Ø¨ÙˆØªÙŠÙƒ ÙˆØ§Ø­Ø¯
+    public function show($id)
+    {
+        $boutique = Boutique::find($id);
+
+        if (!$boutique) {
+            return response()->json([
+                'message' => 'Boutique introuvable'
+            ], 404);
+        }
+
+        $this->authorize('view', $boutique);
+
+        return response()->json($boutique);
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ Ø¨ÙˆØªÙŠÙƒ
+    public function update(Request $request, $id)
+    {
+        $boutique = Boutique::find($id);
+
+        if (!$boutique) {
+            return response()->json([
+                'message' => 'Boutique introuvable'
+            ], 404);
+        }
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('update', $boutique);
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† ØµØ­Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+        $request->validate([
+            'nom'          => 'sometimes|required|string|max:255',
+            'description'  => 'nullable|string',
+            'telephone'    => 'sometimes|required|string|max:20',
+            'email'        => 'nullable|email|max:255',
+            'adresse'      => 'sometimes|required|string|max:255',
+            'emplacement'  => 'sometimes|required|string|max:255',
+            'logo'         => 'nullable|string',
+            'couverture'   => 'nullable|string',
+            'actif'        => 'boolean',
+        ]);
+
+        $boutique->nom = $request->nom ?? $boutique->nom;
+        $boutique->description = $request->description ?? $boutique->description;
+        $boutique->telephone = $request->telephone ?? $boutique->telephone;
+        $boutique->email = $request->email ?? $boutique->email;
+        $boutique->adresse = $request->adresse ?? $boutique->adresse;
+        $boutique->emplacement = $request->emplacement ?? $boutique->emplacement;
+        $boutique->logo = $request->logo ?? $boutique->logo;
+        $boutique->couverture = $request->couverture ?? $boutique->couverture;
+        $boutique->actif = $request->actif ?? $boutique->actif;
+
+        $boutique->save();
+
+        return response()->json([
+            'message' => 'Boutique mise Ã  jour avec succÃ¨s',
+            'data'    => $boutique
+        ]);
+    }
+
+    // Ø­Ø°Ù Ø¨ÙˆØªÙŠÙƒ
+    public function destroy($id)
+    {
+        $boutique = Boutique::find($id);
+
+        if (!$boutique) {
+            return response()->json([
+                'message' => 'Boutique introuvable'
+            ], 404);
+        }
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('delete', $boutique);
+
+        $boutique->delete();
+
+        return response()->json([
+            'message' => 'Boutique supprimÃ©e avec succÃ¨s'
+        ]);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\CategoryController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Category;
+
+class CategoryController extends Controller
+{
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„ØªØµÙ†ÙŠÙØ§Øª
+    public function index()
+    {
+        $this->authorize('viewAny', Category::class);
+
+        return Category::orderBy('id', 'desc')->paginate(10);
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ ØªØµÙ†ÙŠÙ Ø¬Ø¯ÙŠØ¯
+   public function store(Request $request)
+{
+    $this->authorize('create', Category::class);
+
+    $request->validate([
+        'nom' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'parent_id' => 'nullable|exists:categories,id',
+        'ordre' => 'nullable|integer',
+        'actif' => 'boolean',
+    ]);
+
+    $category = Category::create([
+        'nom' => $request->nom,
+        'description' => $request->description,
+        'parent_id' => $request->parent_id,
+        'ordre' => $request->ordre ?? 0,
+        'actif' => $request->actif ?? true,
+    ]);
+
+    return response()->json([
+        'message' => 'CatÃ©gorie crÃ©Ã©e avec succÃ¨s',
+        'data' => $category
+    ], 201);
+}
+    // Ø¹Ø±Ø¶ ØªØµÙ†ÙŠÙ ÙˆØ§Ø­Ø¯
+    public function show($id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'message' => 'CatÃ©gorie introuvable'
+            ], 404);
+        }
+
+        $this->authorize('view', $category);
+
+        return response()->json($category);
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ ØªØµÙ†ÙŠÙ
+    public function update(Request $request, $id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'message' => 'CatÃ©gorie introuvable'
+            ], 404);
+        }
+
+        $this->authorize('update', $category);
+
+        $request->validate([
+            'nom' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'parent_id' => 'nullable|exists:categories,id',
+            'ordre' => 'nullable|integer',
+            'actif' => 'boolean',
+        ]);
+
+        $category->nom = $request->nom ?? $category->nom;
+        $category->description = $request->description ?? $category->description;
+        $category->parent_id = $request->parent_id ?? $category->parent_id;
+        $category->ordre = $request->ordre ?? $category->ordre;
+        $category->actif = $request->actif ?? $category->actif;
+
+        $category->save();
+
+        return response()->json([
+            'message' => 'CatÃ©gorie mise Ã  jour avec succÃ¨s',
+            'data' => $category
+        ]);
+    }
+
+    // Ø­Ø°Ù ØªØµÙ†ÙŠÙ
+    public function destroy($id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'message' => 'CatÃ©gorie introuvable'
+            ], 404);
+        }
+
+        $this->authorize('delete', $category);
+
+        $category->delete();
+
+        return response()->json([
+            'message' => 'CatÃ©gorie supprimÃ©e avec succÃ¨s'
+        ]);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\Controller.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
+
+class Controller extends BaseController
+{
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\DemandeController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Demande;
+use App\Models\Produit;
+
+class DemandeController extends Controller
+{
+   // Ø¹Ø±Ø¶ Ø§Ù„Ø·Ù„Ø¨Ø§Øª
+public function index()
+{
+    // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+    $this->authorize('viewAny', Demande::class);
+
+    // Ø¬Ù„Ø¨ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø§Ù„Ø­Ø§Ù„ÙŠ
+    $user = auth()->user();
+
+    // Super Admin ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø·Ù„Ø¨Ø§Øª
+    if ($user->role === 'super_admin') {
+
+        return Demande::with(['produit', 'boutique', 'user'])
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+    }
+
+    // Vendeur ÙŠØ´ÙˆÙ ØºÙŠØ± Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø¯ÙŠØ§Ù„ Boutique Ø¯ÙŠØ§Ù„Ùˆ
+    if ($user->role === 'vendeur') {
+
+        return Demande::with(['produit', 'boutique', 'user'])
+            ->where('boutique_id', $user->boutique->id)
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+    }
+
+    // Ø§Ø­ØªÙŠØ§Ø·ÙŠØ§Ù‹ØŒ Ø¥Ù„Ø§ ÙˆØµÙ„ Ø´ÙŠ role Ø¢Ø®Ø± Ù„Ù‡Ù†Ø§
+    return response()->json([
+        'message' => 'AccÃ¨s non autorisÃ©'
+    ], 403);
+}
+
+    // Ø¥Ù†Ø´Ø§Ø¡ Ø·Ù„Ø¨ Ø¬Ø¯ÙŠØ¯
+    public function store(Request $request)
+    {
+        $this->authorize('create', Demande::class);
+        $request->validate([
+            'produit_id' => 'required|exists:produits,id',
+            'nom_client' => 'required|string|max:255',
+            'telephone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'quantite' => 'required|integer|min:1',
+            'message' => 'nullable|string',
+            // 'statut' => 'in:en_attente,acceptee,refusee',
+        ]);
+
+        // Ø¬Ù„Ø¨ Ø§Ù„Ù…Ù†ØªØ¬
+        $produit = Produit::findOrFail($request->produit_id);
+
+        $demande = Demande::create([
+            'produit_id'  => $produit->id,
+            'boutique_id' => $produit->boutique_id,
+            'nom_client'  => $request->nom_client,
+            'telephone'   => $request->telephone,
+            'email'       => $request->email,
+            'quantite'    => $request->quantite,
+            'message'     => $request->message,
+            'statut'      => 'en_attente',
+            'user_id' => auth()->id(),
+        ]);
+
+        return response()->json([
+            'message' => 'Demande crÃ©Ã©e avec succÃ¨s',
+            'data' => $demande->load(['produit', 'boutique'])
+        ], 201);
+    }
+
+    // Ø¹Ø±Ø¶ Ø·Ù„Ø¨ ÙˆØ§Ø­Ø¯
+    public function show($id)
+    {
+        $demande = Demande::with(['produit', 'boutique'])->findOrFail($id);
+
+        if (!$demande) {
+            return response()->json([
+                'message' => 'Demande introuvable'
+            ], 404);
+        }
+
+        return response()->json($demande);
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ Ø·Ù„Ø¨
+    public function update(Request $request, $id)
+    {
+        $demande = Demande::find($id);
+
+        if (!$demande) {
+            return response()->json([
+                'message' => 'Demande introuvable'
+            ], 404);
+        }
+        $this->authorize('update', $demande);
+
+        $request->validate([
+            'produit_id' => 'sometimes|exists:produits,id',
+            'nom_client' => 'sometimes|string|max:255',
+            'telephone' => 'sometimes|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'quantite' => 'sometimes|integer|min:1',
+            'message' => 'nullable|string',
+            // Ø§Ù„Ø²Ø§Ø¦Ø± Ù…Ø§ Ø®Ø§ØµÙˆØ´ ÙŠØ­Ø¯Ø¯ Ø§Ù„Ø­Ø§Ù„Ø©
+            // Ø§Ù„Ø­Ø§Ù„Ø© ØºØ§Ø¯ÙŠ ØªÙƒÙˆÙ† Ø¯Ø§Ø¦Ù…Ø§ en_attente
+        ]);
+
+        if ($request->has('produit_id')) {
+            $produit = Produit::findOrFail($request->produit_id);
+
+            $demande->produit_id = $produit->id;
+            $demande->boutique_id = $produit->boutique_id;
+        }
+
+        $demande->nom_client = $request->nom_client ?? $demande->nom_client;
+        $demande->telephone = $request->telephone ?? $demande->telephone;
+        $demande->email = $request->email ?? $demande->email;
+        $demande->quantite = $request->quantite ?? $demande->quantite;
+        $demande->message = $request->message ?? $demande->message;
+
+        $demande->save();
+
+        return response()->json([
+            'message' => 'Demande mise Ã  jour avec succÃ¨s',
+            'data' => $demande->fresh()->load(['produit', 'boutique'])
+        ]);
+    }
+
+    // Ø­Ø°Ù Ø·Ù„Ø¨
+    public function destroy($id)
+    {
+        $demande = Demande::find($id);
+
+        if (!$demande) {
+            return response()->json([
+                'message' => 'Demande introuvable'
+            ], 404);
+        }
+        $this->authorize('delete', $demande);
+        $demande->delete();
+
+        return response()->json([
+            'message' => 'Demande supprimÃ©e avec succÃ¨s'
+        ]);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\HorairesBoutiqueController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\HorairesBoutique;
+
+class HorairesBoutiqueController extends Controller
+{
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…ÙˆØ§Ø¹ÙŠØ¯
+    public function index()
+    {
+        $this->authorize('viewAny', HorairesBoutique::class);
+
+        return HorairesBoutique::paginate(10);
+    }
+    // Ø¥Ø¶Ø§ÙØ© Ù…ÙˆØ¹Ø¯ Ø¬Ø¯ÙŠØ¯
+    public function store(Request $request)
+    {
+        $this->authorize('create', HorairesBoutique::class);
+
+        $request->validate([
+            'boutique_id' => 'required|exists:boutiques,id',
+            'jour' => 'required|string|max:20',
+            'heure_ouverture' => 'nullable',
+            'heure_fermeture' => 'nullable',
+            'ferme' => 'boolean',
+        ]);
+
+        $horaire = HorairesBoutique::create([
+            'boutique_id' => $request->boutique_id,
+            'jour' => $request->jour,
+            'heure_ouverture' => $request->heure_ouverture,
+            'heure_fermeture' => $request->heure_fermeture,
+            'ferme' => $request->ferme ?? false,
+        ]);
+
+        return response()->json([
+            'message' => 'Horaire crÃ©Ã© avec succÃ¨s',
+            'data' => $horaire
+        ], 201);
+    }
+
+    // Ø¹Ø±Ø¶ Ù…ÙˆØ¹Ø¯ ÙˆØ§Ø­Ø¯
+    public function show($id)
+    {
+        $horaire = HorairesBoutique::find($id);
+
+        if (!$horaire) {
+            return response()->json([
+                'message' => 'Horaire introuvable'
+            ], 404);
+        }
+
+        $this->authorize('view', $horaire);
+
+        return response()->json($horaire);
+    }
+    // ØªØ¹Ø¯ÙŠÙ„ Ù…ÙˆØ¹Ø¯
+    public function update(Request $request, $id)
+    {
+        $horaire = HorairesBoutique::find($id);
+
+        if (!$horaire) {
+            return response()->json([
+                'message' => 'Horaire introuvable'
+            ], 404);
+        }
+
+        $this->authorize('update', $horaire);
+
+        $request->validate([
+            'jour' => 'sometimes|string|max:20',
+            'heure_ouverture' => 'nullable',
+            'heure_fermeture' => 'nullable',
+            'ferme' => 'boolean',
+        ]);
+
+        $horaire->jour = $request->jour ?? $horaire->jour;
+        $horaire->heure_ouverture = $request->heure_ouverture ?? $horaire->heure_ouverture;
+        $horaire->heure_fermeture = $request->heure_fermeture ?? $horaire->heure_fermeture;
+        $horaire->ferme = $request->ferme ?? $horaire->ferme;
+
+        $horaire->save();
+
+        return response()->json([
+            'message' => 'Horaire mis Ã  jour avec succÃ¨s',
+            'data' => $horaire
+        ]);
+    }
+
+    // Ø­Ø°Ù Ù…ÙˆØ¹Ø¯
+    public function destroy($id)
+    {
+        $horaire = HorairesBoutique::find($id);
+
+        if (!$horaire) {
+            return response()->json([
+                'message' => 'Horaire introuvable'
+            ], 404);
+        }
+
+        $this->authorize('delete', $horaire);
+
+        $horaire->delete();
+
+        return response()->json([
+            'message' => 'Horaire supprimÃ© avec succÃ¨s'
+        ]);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\ImagesProduitController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\ImagesProduit;
+
+class ImagesProduitController extends Controller
+{
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„ØµÙˆØ±
+    public function index()
+    {
+        return ImagesProduit::with('produit')->get();
+    }
+
+    // Ø¥Ø¶Ø§ÙØ© ØµÙˆØ±Ø© Ø¬Ø¯ÙŠØ¯Ø©
+    public function store(Request $request)
+    {
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('create', ImagesProduit::class);
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† ØµØ­Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+        $request->validate([
+            'produit_id' => 'required|exists:produits,id',
+            'chemin' => 'required|string',
+            'principale' => 'boolean',
+            'ordre' => 'integer|min:0',
+        ]);
+
+        // Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØµÙˆØ±Ø©
+        $image = ImagesProduit::create([
+            'produit_id' => $request->produit_id,
+            'chemin' => $request->chemin,
+            'principale' => $request->principale ?? false,
+            'ordre' => $request->ordre ?? 0,
+        ]);
+
+        return response()->json([
+            'message' => 'Image ajoutÃ©e avec succÃ¨s',
+            'data' => $image
+        ], 201);
+    }
+
+    // Ø¹Ø±Ø¶ ØµÙˆØ±Ø© ÙˆØ§Ø­Ø¯Ø©
+    public function show($id)
+    {
+        $image = ImagesProduit::with('produit')->find($id);
+
+        if (!$image) {
+            return response()->json([
+                'message' => 'Image introuvable'
+            ], 404);
+        }
+
+        return response()->json($image);
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ ØµÙˆØ±Ø©
+    public function update(Request $request, $id)
+    {
+        $image = ImagesProduit::with('produit')->find($id);
+
+        if (!$image) {
+            return response()->json([
+                'message' => 'Image introuvable'
+            ], 404);
+        }
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('update', $image);
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† ØµØ­Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+        $request->validate([
+            'chemin' => 'nullable|string',
+            'principale' => 'boolean',
+            'ordre' => 'integer|min:0',
+        ]);
+
+        // ØªØ­Ø¯ÙŠØ« Ø§Ù„ØµÙˆØ±Ø©
+        $image->update([
+            'chemin' => $request->chemin ?? $image->chemin,
+            'principale' => $request->principale ?? $image->principale,
+            'ordre' => $request->ordre ?? $image->ordre,
+        ]);
+
+        return response()->json([
+            'message' => 'Image mise Ã  jour avec succÃ¨s',
+            'data' => $image
+        ]);
+    }
+
+    // Ø­Ø°Ù ØµÙˆØ±Ø©
+    public function destroy($id)
+    {
+        $image = ImagesProduit::find($id);
+
+        if (!$image) {
+            return response()->json([
+                'message' => 'Image introuvable'
+            ], 404);
+        }
+        $this->authorize('delete', $image);
+        $image->delete();
+
+        return response()->json([
+            'message' => 'Image supprimÃ©e avec succÃ¨s'
+        ]);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\JournalAuditController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\JournalAudit;
+
+class JournalAuditController extends Controller
+{
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø³Ø¬Ù„Ø§Øª
+    public function index()
+    {
+        $this->authorize('viewAny', JournalAudit::class);
+
+        return JournalAudit::with('user')->paginate(10);
+    }
+
+    // Ø¹Ø±Ø¶ Ø³Ø¬Ù„ ÙˆØ§Ø­Ø¯
+    public function show($id)
+    {
+        $journal = JournalAudit::with('user')->find($id);
+
+        if (!$journal) {
+            return response()->json([
+                'message' => 'Journal introuvable'
+            ], 404);
+        }
+
+        $this->authorize('view', $journal);
+
+        return response()->json($journal);
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\ProduitController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Produit;
+use App\Models\Boutique;
+
+class ProduitController extends Controller
+{
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª
+    public function index()
+    {
+        $this->authorize('viewAny', Produit::class);
+
+        return Produit::with(['boutique', 'category'])
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ Ù…Ù†ØªØ¬ Ø¬Ø¯ÙŠØ¯
+    public function store(Request $request)
+    {
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('create', Produit::class);
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† ØµØ­Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'marque' => 'nullable|string|max:255',
+            'modele' => 'nullable|string|max:255',
+            'disponible' => 'boolean',
+        ]);
+
+        // Ø¬Ù„Ø¨ Boutique Ø¯ÙŠØ§Ù„ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø§Ù„Ø­Ø§Ù„ÙŠ
+        $boutique = Boutique::where('user_id', auth()->id())->first();
+
+        // Ø¥Ù„Ù‰ Ù…Ø§ Ø¹Ù†Ø¯ÙˆØ´ Boutique
+        if (!$boutique) {
+            return response()->json([
+                'message' => 'Vous devez crÃ©er une boutique avant dâ€™ajouter un produit.'
+            ], 403);
+        }
+
+        // Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ù†ØªØ¬
+        $produit = Produit::create([
+            'boutique_id' => $boutique->id,
+            'category_id' => $request->category_id,
+            'nom' => $request->nom,
+            'description' => $request->description,
+            'prix' => $request->prix,
+            'stock' => $request->stock,
+            'marque' => $request->marque,
+            'modele' => $request->modele,
+            'disponible' => $request->disponible ?? true,
+            'vues' => 0,
+        ]);
+
+        // Ø¥Ø±Ø¬Ø§Ø¹ Ø§Ù„Ù†ØªÙŠØ¬Ø©
+        return response()->json([
+            'message' => 'Produit crÃ©Ã© avec succÃ¨s',
+            'data' => $produit
+        ], 201);
+    }
+
+    // Ø¹Ø±Ø¶ Ù…Ù†ØªØ¬ ÙˆØ§Ø­Ø¯
+    public function show($id)
+    {
+        $produit = Produit::with(['boutique', 'category'])->find($id);
+
+        if (!$produit) {
+            return response()->json([
+                'message' => 'Produit introuvable'
+            ], 404);
+        }
+
+        $this->authorize('view', $produit);
+
+        return response()->json(
+            $produit->load(['boutique', 'category', 'images'])
+        );
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ Ù…Ù†ØªØ¬
+    public function update(Request $request, $id)
+    {
+        $produit = Produit::find($id);
+
+        if (!$produit) {
+            return response()->json([
+                'message' => 'Produit introuvable'
+            ], 404);
+        }
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('update', $produit);
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† ØµØ­Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+        $request->validate([
+            'category_id' => 'sometimes|exists:categories,id',
+            'nom' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'sometimes|required|numeric|min:0',
+            'stock' => 'sometimes|required|integer|min:0',
+            'marque' => 'nullable|string|max:255',
+            'modele' => 'nullable|string|max:255',
+            'disponible' => 'boolean',
+        ]);
+
+        // ØªØ­Ø¯ÙŠØ« Ø§Ù„Ù…Ù†ØªØ¬
+        $produit->category_id = $request->category_id ?? $produit->category_id;
+        $produit->nom = $request->nom ?? $produit->nom;
+        $produit->description = $request->description ?? $produit->description;
+        $produit->prix = $request->prix ?? $produit->prix;
+        $produit->stock = $request->stock ?? $produit->stock;
+        $produit->marque = $request->marque ?? $produit->marque;
+        $produit->modele = $request->modele ?? $produit->modele;
+        $produit->disponible = $request->disponible ?? $produit->disponible;
+
+        $produit->save();
+
+        return response()->json([
+            'message' => 'Produit mis Ã  jour avec succÃ¨s',
+            'data' => $produit
+        ]);
+    }
+    // Ø­Ø°Ù Ù…Ù†ØªØ¬
+    public function destroy($id)
+    {
+        $produit = Produit::find($id);
+
+        if (!$produit) {
+            return response()->json([
+                'message' => 'Produit introuvable'
+            ], 404);
+        }
+
+        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©
+        $this->authorize('delete', $produit);
+
+        // Ø­Ø°Ù Ø§Ù„Ù…Ù†ØªØ¬
+        $produit->delete();
+
+        return response()->json([
+            'message' => 'Produit supprimÃ© avec succÃ¨s'
+        ]);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Http\Controllers\SignalementController.php =====
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Signalement;
+
+class SignalementController extends Controller
+{
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø¨Ù„Ø§ØºØ§Øª
+    public function index()
+    {
+        $this->authorize('viewAny', Signalement::class);
+
+        return Signalement::with(['user', 'produit'])->paginate(10);
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ Ø¨Ù„Ø§Øº Ø¬Ø¯ÙŠØ¯
+    public function store(Request $request)
+    {
+        
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'produit_id' => 'required|exists:produits,id',
+            'raison' => 'required|string',
+        ]);
+
+        $signalement = Signalement::create([
+            'user_id' => $request->user_id,
+            'produit_id' => $request->produit_id,
+            'raison' => $request->raison,
+            'statut' => 'en_attente',
+        ]);
+
+        return response()->json([
+            'message' => 'Signalement crÃ©Ã© avec succÃ¨s',
+            'data' => $signalement->load(['user', 'produit'])
+        ], 201);
+    }
+
+    // Ø¹Ø±Ø¶ Ø¨Ù„Ø§Øº ÙˆØ§Ø­Ø¯
+    public function show($id)
+    {
+
+        $signalement = Signalement::with(['user', 'produit'])->find($id);
+
+        if (!$signalement) {
+            return response()->json([
+                'message' => 'Signalement introuvable'
+            ], 404);
+        }
+        $this->authorize('view', $signalement);
+        return response()->json($signalement);
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ Ø¨Ù„Ø§Øº
+    public function update(Request $request, $id)
+    {
+        $signalement = Signalement::find($id);
+
+        if (!$signalement) {
+            return response()->json([
+                'message' => 'Signalement introuvable'
+            ], 404);
+        }
+
+        $this->authorize('update', $signalement);
+
+        $request->validate([
+            'raison' => 'nullable|string',
+            'statut' => 'sometimes|in:en_attente,accepte,refuse',
+        ]);
+
+        $signalement->raison = $request->raison ?? $signalement->raison;
+        $signalement->statut = $request->statut ?? $signalement->statut;
+
+        $signalement->save();
+
+        return response()->json([
+            'message' => 'Signalement mis Ã  jour avec succÃ¨s',
+            'data' => $signalement->fresh()->load(['user', 'produit'])
+        ]);
+    }
+
+    // Ø­Ø°Ù Ø¨Ù„Ø§Øº
+    public function destroy($id)
+    {
+        $signalement = Signalement::with(['user', 'produit'])->find($id);
+
+        if (!$signalement) {
+            return response()->json([
+                'message' => 'Signalement introuvable'
+            ], 404);
+        }
+        $this->authorize('delete', $signalement);
+        $signalement->delete();
+
+        return response()->json([
+            'message' => 'Signalement supprimÃ© avec succÃ¨s'
+        ]);
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\BoutiquePolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\Boutique;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class BoutiquePolicy
+{
+    use HandlesAuthorization;
+
+    // Ø£ÙŠ ÙˆØ§Ø­Ø¯ ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ø§Ù„Ø¨ÙˆØªÙŠÙƒØ§Øª
+    public function viewAny(User $user)
+    {
+        return true;
+    }
+
+    // Ø£ÙŠ ÙˆØ§Ø­Ø¯ ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Boutique ÙˆØ­Ø¯Ø©
+    public function view(User $user, Boutique $boutique)
+    {
+        return true;
+    }
+
+    // ØºÙŠØ± vendeur Ùˆ super_admin ÙŠÙ‚Ø¯Ø±Ùˆ ÙŠÙ†Ø´Ø¦Ùˆ Boutique
+    public function create(User $user)
+    {
+        return in_array($user->role, ['super_admin', 'vendeur']);
+    }
+
+    // ØºÙŠØ± Ù…ÙˆÙ„ Ø§Ù„Ø¨ÙˆØªÙŠÙƒ Ø£Ùˆ super_admin ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ø¯Ù„
+    public function update(User $user, Boutique $boutique)
+    {
+        return $user->role === 'super_admin'
+            || $user->id === $boutique->user_id;
+    }
+
+    // ØºÙŠØ± super_admin ÙŠÙ‚Ø¯Ø± ÙŠØ­Ø°Ù
+    public function delete(User $user, Boutique $boutique)
+    {
+        return $user->role === 'super_admin';
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\CategoryPolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\Category;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class CategoryPolicy
+{
+    use HandlesAuthorization;
+
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„ØªØµÙ†ÙŠÙØ§Øª
+    public function viewAny(User $user)
+    {
+        return true;
+    }
+
+    // Ø¹Ø±Ø¶ ØªØµÙ†ÙŠÙ ÙˆØ§Ø­Ø¯
+    public function view(User $user, Category $category)
+    {
+        return true;
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ ØªØµÙ†ÙŠÙ
+    public function create(User $user)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ ØªØµÙ†ÙŠÙ
+    public function update(User $user, Category $category)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    // Ø­Ø°Ù ØªØµÙ†ÙŠÙ
+    public function delete(User $user, Category $category)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    public function restore(User $user, Category $category)
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, Category $category)
+    {
+        return false;
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\DemandePolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\Demande;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class DemandePolicy
+{
+    use HandlesAuthorization;
+
+    // Ø¹Ø±Ø¶ Ù„Ø§Ø¦Ø­Ø© Ø§Ù„Ø·Ù„Ø¨Ø§Øª:
+    // Vendeur ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø¯ÙŠØ§Ù„ boutique Ø¯ÙŠØ§Ù„Ùˆ
+    // Super Admin ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø·Ù„Ø¨Ø§Øª
+    // Visiteur Ù…Ø§ ÙŠÙ‚Ø¯Ø±Ø´ ÙŠØ´ÙˆÙ Ù„Ø§Ø¦Ø­Ø© Ø§Ù„Ø·Ù„Ø¨Ø§Øª ÙƒØ§Ù…Ù„Ø©
+    public function viewAny(User $user)
+    {
+        return $user->role === 'vendeur'
+            || $user->role === 'super_admin';
+    }
+
+    // Ø¹Ø±Ø¶ Ø·Ù„Ø¨ ÙˆØ§Ø­Ø¯:
+    // Super Admin ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ø£ÙŠ demande
+    // Visiteur ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ ØºÙŠØ± demande Ø¯ÙŠØ§Ù„Ùˆ
+    // Vendeur ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ ØºÙŠØ± Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø¯ÙŠØ§Ù„ boutique Ø¯ÙŠØ§Ù„Ùˆ
+    public function view(User $user, Demande $demande)
+    {
+        return $user->role === 'super_admin'
+            || $user->id === $demande->user_id
+            || (
+                $user->role === 'vendeur'
+                && $user->boutique
+                && $user->boutique->id === $demande->boutique_id
+            );
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ Ø·Ù„Ø¨ Ø´Ø±Ø§Ø¡:
+    // ØºÙŠØ± Visiteur Ù‡Ùˆ Ø§Ù„Ù„ÙŠ ÙŠÙ‚Ø¯Ø± ÙŠØ¯ÙŠØ± Demande
+    public function create(User $user)
+    {
+        return $user->role === 'visiteur';
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ø·Ù„Ø¨:
+    // Visiteur ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ø¯Ù„ ØºÙŠØ± Ø§Ù„Ø·Ù„Ø¨ Ø¯ÙŠØ§Ù„Ùˆ
+    // ÙˆØ¶Ø±ÙˆØ±ÙŠ Ø§Ù„Ø·Ù„Ø¨ ÙŠÙƒÙˆÙ† Ù…Ø§Ø²Ø§Ù„ en_attente
+    // Ù…Ù†ÙŠÙ† vendeur ÙŠÙ‚Ø¨Ù„Ùˆ Ø£Ùˆ ÙŠØ±ÙØ¶ÙˆØŒ Ù…Ø§ ÙŠØ¨Ù‚Ø§Ø´ visitor ÙŠÙ‚Ø¯Ø± ÙŠØ¨Ø¯Ù„Ùˆ
+    public function update(User $user, Demande $demande)
+    {
+        return $user->role === 'visiteur'
+            && $user->id === $demande->user_id
+            && $demande->statut === 'en_attente';
+    }
+
+    // Ø­Ø°Ù Ø§Ù„Ø·Ù„Ø¨:
+    // Visiteur ÙŠÙ‚Ø¯Ø± ÙŠØ­Ø°Ù ØºÙŠØ± Ø§Ù„Ø·Ù„Ø¨ Ø¯ÙŠØ§Ù„Ùˆ
+    // ÙˆØ¶Ø±ÙˆØ±ÙŠ ÙŠÙƒÙˆÙ† Ù…Ø§Ø²Ø§Ù„ en_attente
+    public function delete(User $user, Demande $demande)
+    {
+        return $user->role === 'visiteur'
+            && $user->id === $demande->user_id
+            && $demande->statut === 'en_attente';
+    }
+
+    // Ø§Ø³ØªØ±Ø¬Ø§Ø¹ Ø§Ù„Ø·Ù„Ø¨ Ø§Ù„Ù…Ø­Ø°ÙˆÙ
+    // Ø­Ø§Ù„ÙŠØ§Ù‹ Ù…Ø§ Ø¹Ù†Ø¯Ù†Ø§Ø´ Ù‡Ø§Ø¯ fonctionnalitÃ©
+    public function restore(User $user, Demande $demande)
+    {
+        return false;
+    }
+
+    // Ø­Ø°Ù Ù†Ù‡Ø§Ø¦ÙŠ
+    // Ø­Ø§Ù„ÙŠØ§Ù‹ Ù…Ø§ Ø¨ØºÙŠÙ†Ø§Ø´ Ù†Ø³ØªØ¹Ù…Ù„ÙˆÙ‡
+    public function forceDelete(User $user, Demande $demande)
+    {
+        return false;
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\HoraireBoutiquePolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\HorairesBoutique;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+
+class HoraireBoutiquePolicy
+{
+    use HandlesAuthorization;
+
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…ÙˆØ§Ø¹ÙŠØ¯
+    public function viewAny(User $user)
+    {
+        return true;
+    }
+
+    // Ø¹Ø±Ø¶ Ù…ÙˆØ¹Ø¯ ÙˆØ§Ø­Ø¯
+    public function view(User $user, HorairesBoutique $horaireBoutique)
+    {
+        return true;
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ Ù…ÙˆØ¹Ø¯
+    public function create(User $user)
+    {
+        return $user->role === 'vendeur' || $user->role === 'super_admin';
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ Ù…ÙˆØ¹Ø¯
+    public function update(User $user, HorairesBoutique $horaireBoutique)
+    {
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->role === 'vendeur'
+            && $horaireBoutique->boutique->user_id === $user->id;
+    }
+
+    // Ø­Ø°Ù Ù…ÙˆØ¹Ø¯
+    public function delete(User $user, HorairesBoutique $horaireBoutique)
+    {
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->role === 'vendeur'
+            && $horaireBoutique->boutique->user_id === $user->id;
+    }
+    public function restore(User $user, HorairesBoutique $horaireBoutique)
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, HorairesBoutique $horaireBoutique)
+    {
+        return false;
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\ImagesProduitPolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\ImagesProduit;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class ImagesProduitPolicy
+{
+    use HandlesAuthorization;
+
+    // Ø£ÙŠ Ù…Ø³ØªØ®Ø¯Ù… Ù…Ø³Ø¬Ù„ ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ø§Ù„ØµÙˆØ±
+    public function viewAny(User $user)
+    {
+        return true;
+    }
+
+    // Ø£ÙŠ Ù…Ø³ØªØ®Ø¯Ù… Ù…Ø³Ø¬Ù„ ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ ØµÙˆØ±Ø©
+    public function view(User $user, ImagesProduit $imagesProduit)
+    {
+        return true;
+    }
+
+    // ØºÙŠØ± vendeur Ùˆ super_admin ÙŠÙ‚Ø¯Ø±Ùˆ ÙŠØ¶ÙŠÙÙˆ ØµÙˆØ±
+    public function create(User $user)
+    {
+        return in_array($user->role, ['super_admin', 'vendeur']);
+    }
+
+    // ØºÙŠØ± Ù…ÙˆÙ„ Ø§Ù„Ù…Ù†ØªØ¬ Ø£Ùˆ super_admin ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ø¯Ù„ Ø§Ù„ØµÙˆØ±Ø©
+    public function update(User $user, ImagesProduit $imagesProduit)
+    {
+        return $user->role === 'super_admin'
+            || $user->id === $imagesProduit->produit->boutique->user_id;
+    }
+
+    // ØºÙŠØ± Ù…ÙˆÙ„ Ø§Ù„Ù…Ù†ØªØ¬ Ø£Ùˆ super_admin ÙŠÙ‚Ø¯Ø± ÙŠØ­Ø°Ù Ø§Ù„ØµÙˆØ±Ø©
+    public function delete(User $user, ImagesProduit $imagesProduit)
+    {
+        return $user->role === 'super_admin'
+            || $user->id === $imagesProduit->produit->boutique->user_id;
+    }
+
+    public function restore(User $user, ImagesProduit $imagesProduit)
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, ImagesProduit $imagesProduit)
+    {
+        return false;
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\JournalAuditPolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\JournalAudit;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class JournalAuditPolicy
+{
+    use HandlesAuthorization;
+
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø³Ø¬Ù„Ø§Øª
+    public function viewAny(User $user)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    // Ø¹Ø±Ø¶ Ø³Ø¬Ù„ ÙˆØ§Ø­Ø¯
+    public function view(User $user, JournalAudit $journalAudit)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    // Ø¥Ù†Ø´Ø§Ø¡ Ø³Ø¬Ù„
+    public function create(User $user)
+    {
+        // Ø§Ù„Ù†Ø¸Ø§Ù… Ù‡Ùˆ Ø§Ù„Ù„ÙŠ ÙƒÙŠØ®Ù„Ù‚ Ø§Ù„Ø³Ø¬Ù„Ø§ØªØŒ Ù…Ø§Ø´ÙŠ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
+        return false;
+    }
+
+    // ØªØ¹Ø¯ÙŠÙ„ Ø³Ø¬Ù„
+    public function update(User $user, JournalAudit $journalAudit)
+    {
+        return false;
+    }
+
+    // Ø­Ø°Ù Ø³Ø¬Ù„
+    public function delete(User $user, JournalAudit $journalAudit)
+    {
+        return false;
+    }
+
+    // Ø§Ø³ØªØ±Ø¬Ø§Ø¹ Ø³Ø¬Ù„
+    public function restore(User $user, JournalAudit $journalAudit)
+    {
+        return false;
+    }
+
+    // Ø­Ø°Ù Ù†Ù‡Ø§Ø¦ÙŠ
+    public function forceDelete(User $user, JournalAudit $journalAudit)
+    {
+        return false;
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\ProduitPolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\Produit;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class ProduitPolicy
+{
+    use HandlesAuthorization;
+
+    // Ø£ÙŠ ÙˆØ§Ø­Ø¯ ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª
+    public function viewAny(User $user)
+    {
+        return true;
+    }
+
+    // Ø£ÙŠ ÙˆØ§Ø­Ø¯ ÙŠÙ‚Ø¯Ø± ÙŠØ´ÙˆÙ Ù…Ù†ØªÙˆØ¬ ÙˆØ§Ø­Ø¯
+    public function view(User $user, Produit $produit)
+    {
+        return true;
+    }
+
+    // ØºÙŠØ± vendeur Ùˆ super_admin ÙŠÙ‚Ø¯Ø±Ùˆ ÙŠØ²ÙŠØ¯Ùˆ Ù…Ù†ØªÙˆØ¬
+    public function create(User $user)
+    {
+        return in_array($user->role, ['super_admin', 'vendeur']);
+    }
+
+    // ØºÙŠØ± Ù…ÙˆÙ„ Ø§Ù„Ø¨ÙˆØªÙŠÙƒ Ø¯ÙŠØ§Ù„ Ø§Ù„Ù…Ù†ØªÙˆØ¬ Ø£Ùˆ super_admin ÙŠÙ‚Ø¯Ø± ÙŠØ¹Ø¯Ù„
+    public function update(User $user, Produit $produit)
+    {
+        return $user->role === 'super_admin'
+            || $user->id === $produit->boutique->user_id;
+    }
+
+    // ØºÙŠØ± super_admin ÙŠÙ‚Ø¯Ø± ÙŠØ­Ø°Ù
+    public function delete(User $user, Produit $produit)
+    {
+        return $user->role === 'super_admin';
+    }
+}
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\app\Policies\SignalementPolicy.php =====
+
+<?php
+
+namespace App\Policies;
+
+use App\Models\Signalement;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class SignalementPolicy
+{
+    use HandlesAuthorization;
+
+    /**
+     * Determine whether the user can view any models.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    // Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ signalements
+    public function viewAny(User $user)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Signalement  $signalement
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    // Ø¹Ø±Ø¶ signalement ÙˆØ§Ø­Ø¯
+    public function view(User $user, Signalement $signalement)
+    {
+        return $user->role === 'super_admin';
+    }
+    /**
+     * Determine whether the user can create models.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    // Ø¥Ù†Ø´Ø§Ø¡ signalement
+    public function create(User $user)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Signalement  $signalement
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    // ØªØ¹Ø¯ÙŠÙ„ signalement
+    public function update(User $user, Signalement $signalement)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Signalement  $signalement
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    // Ø­Ø°Ù signalement
+    public function delete(User $user, Signalement $signalement)
+    {
+        return $user->role === 'super_admin';
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Signalement  $signalement
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function restore(User $user, Signalement $signalement)
+    {
+        return false;
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Signalement  $signalement
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function forceDelete(User $user, Signalement $signalement)
+    {
+        return false;
+    }
+}
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\routes\api.php =====
+
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BoutiqueController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProduitController;
+use App\Http\Controllers\ImagesProduitController;
+use App\Http\Controllers\HorairesBoutiqueController;
+use App\Http\Controllers\SignalementController;
+use App\Http\Controllers\JournalAuditController;
+use App\Http\Controllers\DemandeController;
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
+// Test API
+Route::get('/test', function () {
+    return 'API fonctionne';
+});
+
+// Authentication
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+// Consultation
+// Public
+Route::get('/boutiques', [BoutiqueController::class, 'index']);
+Route::get('/boutiques/{boutique}', [BoutiqueController::class, 'show']);
+
+
+Route::apiResource('categories', CategoryController::class)->only([
+    'index',
+    'show'
+]);
+
+Route::apiResource('produits', ProduitController::class)->only([
+    'index',
+    'show'
+]);
+
+// Demandes (Visitor)
+Route::post('/demandes', [DemandeController::class, 'store']);
+
+// Signalements (Visitor)
+Route::post('/signalements', [SignalementController::class, 'store']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Protected Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Current user
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Boutiques
+    Route::post('/boutiques', [BoutiqueController::class, 'store']);
+    Route::put('/boutiques/{boutique}', [BoutiqueController::class, 'update']);
+    Route::patch('/boutiques/{boutique}', [BoutiqueController::class, 'update']);
+    Route::delete('/boutiques/{boutique}', [BoutiqueController::class, 'destroy']);
+
+    // Categories
+    Route::apiResource('categories', CategoryController::class)->except([
+        'index',
+        'show'
+    ]);
+
+    // Produits
+    Route::apiResource('produits', ProduitController::class)->except([
+        'index',
+        'show'
+    ]);
+
+    // Images Produits
+    Route::apiResource('images-produits', ImagesProduitController::class);
+
+    // Horaires
+    Route::apiResource('horaires-boutiques', HorairesBoutiqueController::class);
+
+    // Demandes
+    Route::apiResource('demandes', DemandeController::class)->except([
+        'store'
+    ]);
+
+    // Signalements
+    Route::apiResource('signalements', SignalementController::class)->except([
+        'store'
+    ]);
+
+    // Journaux Audit
+    Route::get('/journaux-audit', [JournalAuditController::class, 'index']);
+    Route::get('/journaux-audit/{journalAudit}', [JournalAuditController::class, 'show']);
+});
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\routes\channels.php =====
+
+<?php
+
+use Illuminate\Support\Facades\Broadcast;
+
+/*
+|--------------------------------------------------------------------------
+| Broadcast Channels
+|--------------------------------------------------------------------------
+|
+| Here you may register all of the event broadcasting channels that your
+| application supports. The given channel authorization callbacks are
+| used to check if an authenticated user can listen to the channel.
+|
+*/
+
+Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\routes\console.php =====
+
+<?php
+
+use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\Artisan;
+
+/*
+|--------------------------------------------------------------------------
+| Console Routes
+|--------------------------------------------------------------------------
+|
+| This file is where you may define all of your Closure based console
+| commands. Each Closure is bound to a command instance allowing a
+| simple approach to interacting with each command's IO methods.
+|
+*/
+
+Artisan::command('inspire', function () {
+    $this->comment(Inspiring::quote());
+})->purpose('Display an inspiring quote');
+
+
+
+===== C:\Users\Microsoft\marketplace-mobile-center\routes\web.php =====
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('welcome');
+});
+

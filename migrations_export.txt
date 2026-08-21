@@ -1,0 +1,848 @@
+﻿
+
+===== 2014_10_12_000000_create_users_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateUsersTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('users');
+    }
+}
+
+
+
+===== 2014_10_12_100000_create_password_resets_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreatePasswordResetsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('password_resets', function (Blueprint $table) {
+            $table->string('email')->index();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('password_resets');
+    }
+}
+
+
+
+===== 2019_08_19_000000_create_failed_jobs_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateFailedJobsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('failed_jobs', function (Blueprint $table) {
+            $table->id();
+            $table->string('uuid')->unique();
+            $table->text('connection');
+            $table->text('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('failed_jobs');
+    }
+}
+
+
+
+===== 2019_12_14_000001_create_personal_access_tokens_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreatePersonalAccessTokensTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('personal_access_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('tokenable');
+            $table->string('name');
+            $table->string('token', 64)->unique();
+            $table->text('abilities')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('personal_access_tokens');
+    }
+}
+
+
+
+===== 2026_07_16_192541_create_boutiques_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateBoutiquesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+    Schema::create('boutiques', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ù„Ø¨Ø§Ø¦Ø¹ ØµØ§Ø­Ø¨ Ø§Ù„Ù…ØªØ¬Ø±
+        $table->foreignId('user_id')
+              ->constrained()
+              ->onDelete('cascade');
+
+        // Ø§Ø³Ù… Ø§Ù„Ù…ØªØ¬Ø±
+        $table->string('nom');
+
+        // ÙˆØµÙ Ø§Ù„Ù…ØªØ¬Ø±
+        $table->text('description')->nullable();
+
+        // Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ
+        $table->string('telephone', 20);
+
+        // Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ
+        $table->string('email')->nullable();
+
+        // Ø§Ù„Ø¹Ù†ÙˆØ§Ù†
+        $table->string('adresse');
+
+        // Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©
+        $table->string('ville');
+
+        // Ø´Ø¹Ø§Ø± Ø§Ù„Ù…ØªØ¬Ø±
+        $table->string('logo')->nullable();
+
+        // ØµÙˆØ±Ø© Ø§Ù„ØºÙ„Ø§Ù
+        $table->string('couverture')->nullable();
+
+        // Ù‡Ù„ Ø§Ù„Ù…ØªØ¬Ø± Ù†Ø´Ø·ØŸ
+        $table->boolean('actif')->default(true);
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ¢Ø®Ø± ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('boutiques');
+    }
+}
+
+
+
+===== 2026_07_16_200601_create_categories_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateCategoriesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+   {
+    Schema::create('categories', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ø³Ù… Ø§Ù„ÙØ¦Ø©
+        $table->string('nom');
+
+        // ÙˆØµÙ Ø§Ù„ÙØ¦Ø©
+        $table->text('description')->nullable();
+
+        // Ø§Ù„ÙØ¦Ø© Ø§Ù„Ø£Ø¨ (Ø¥Ø°Ø§ ÙƒØ§Ù†Øª Ù‡Ø°Ù‡ ÙØ¦Ø© ÙØ±Ø¹ÙŠØ©)
+        $table->foreignId('parent_id')
+              ->nullable()
+              ->constrained('categories')
+              ->onDelete('cascade');
+
+        // ØªØ±ØªÙŠØ¨ Ø¹Ø±Ø¶ Ø§Ù„ÙØ¦Ø§Øª
+        $table->integer('ordre')->default(0);
+
+        // Ù‡Ù„ Ø§Ù„ÙØ¦Ø© Ù…ÙØ¹Ù„Ø©ØŸ
+        $table->boolean('actif')->default(true);
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ¢Ø®Ø± ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('categories');
+    }
+}
+
+
+
+===== 2026_07_16_201304_create_produits_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateProduitsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+ {
+    Schema::create('produits', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ù„Ù…ØªØ¬Ø± Ø§Ù„Ø°ÙŠ ÙŠÙ…Ù„Ùƒ Ø§Ù„Ù…Ù†ØªØ¬
+        $table->foreignId('boutique_id')
+              ->constrained()
+              ->onDelete('cascade');
+
+        // Ø§Ù„ÙØ¦Ø© Ø§Ù„ØªÙŠ ÙŠÙ†ØªÙ…ÙŠ Ø¥Ù„ÙŠÙ‡Ø§ Ø§Ù„Ù…Ù†ØªØ¬
+        $table->foreignId('category_id')
+              ->constrained('categories')
+              ->onDelete('cascade');
+
+        // Ø§Ø³Ù… Ø§Ù„Ù…Ù†ØªØ¬
+        $table->string('nom');
+
+        // ÙˆØµÙ Ø§Ù„Ù…Ù†ØªØ¬
+        $table->text('description')->nullable();
+
+        // Ø§Ù„Ø³Ø¹Ø±
+        $table->decimal('prix', 10, 2);
+
+        // Ø§Ù„ÙƒÙ…ÙŠØ© Ø§Ù„Ù…ØªÙˆÙØ±Ø©
+        $table->integer('stock')->default(0);
+
+        // Ø§Ù„Ø¹Ù„Ø§Ù…Ø© Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ©
+        $table->string('marque')->nullable();
+
+        // Ø±Ù‚Ù… Ø§Ù„Ù…ÙˆØ¯ÙŠÙ„
+        $table->string('modele')->nullable();
+
+        // Ù‡Ù„ Ø§Ù„Ù…Ù†ØªØ¬ Ù…ØªÙˆÙØ±ØŸ
+        $table->boolean('disponible')->default(true);
+
+        // Ø¹Ø¯Ø¯ Ø§Ù„Ù…Ø´Ø§Ù‡Ø¯Ø§Øª
+        $table->unsignedInteger('vues')->default(0);
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ§Ù„ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('produits');
+    }
+}
+
+
+
+===== 2026_07_16_202311_create_images_produits_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateImagesProduitsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+   {
+    Schema::create('images_produits', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ù„Ù…Ù†ØªØ¬ Ø§Ù„Ø°ÙŠ ØªÙ†ØªÙ…ÙŠ Ø¥Ù„ÙŠÙ‡ Ø§Ù„ØµÙˆØ±Ø©
+        $table->foreignId('produit_id')
+              ->constrained('produits')
+              ->onDelete('cascade');
+
+        // Ù…Ø³Ø§Ø± Ø§Ù„ØµÙˆØ±Ø©
+        $table->string('chemin');
+
+        // Ù‡Ù„ Ù‡ÙŠ Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©ØŸ
+        $table->boolean('principale')->default(false);
+
+        // ØªØ±ØªÙŠØ¨ Ø¹Ø±Ø¶ Ø§Ù„ØµÙˆØ±
+        $table->integer('ordre')->default(0);
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ§Ù„ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('images_produits');
+    }
+}
+
+
+
+===== 2026_07_16_203211_create_horaires_boutique_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateHorairesBoutiqueTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+  {
+    Schema::create('horaires_boutique', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ù„Ù…ØªØ¬Ø±
+        $table->foreignId('boutique_id')
+              ->constrained('boutiques')
+              ->onDelete('cascade');
+
+        // Ø§Ù„ÙŠÙˆÙ…
+        $table->string('jour');
+
+        // ÙˆÙ‚Øª Ø§Ù„ÙØªØ­
+        $table->time('heure_ouverture');
+
+        // ÙˆÙ‚Øª Ø§Ù„Ø¥ØºÙ„Ø§Ù‚
+        $table->time('heure_fermeture');
+
+        // Ù‡Ù„ Ø§Ù„Ù…ØªØ¬Ø± Ù…ØºÙ„Ù‚ ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„ÙŠÙˆÙ…ØŸ
+        $table->boolean('ferme')->default(false);
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ§Ù„ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('horaires_boutique');
+    }
+}
+
+
+
+===== 2026_07_17_131634_create_statistiques_vues.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateStatistiquesVues extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+   {
+    Schema::create('statistiques_vues', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ù„Ù…Ù†ØªØ¬ Ø§Ù„Ø°ÙŠ ØªØ®ØµÙ‡ Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ©
+        $table->foreignId('produit_id')
+              ->constrained('produits')
+              ->onDelete('cascade');
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ©
+        $table->date('date');
+
+        // Ø¹Ø¯Ø¯ Ø§Ù„Ù…Ø´Ø§Ù‡Ø¯Ø§Øª ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„ÙŠÙˆÙ…
+        $table->unsignedInteger('nombre_vues')->default(0);
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ¢Ø®Ø± ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('statistiques_vues');
+    }
+}
+
+
+
+===== 2026_07_17_133639_create_signalements_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateSignalementsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+    Schema::create('signalements', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø§Ù„Ø°ÙŠ Ù‚Ø§Ù… Ø¨Ø§Ù„Ø¥Ø¨Ù„Ø§Øº
+        $table->foreignId('user_id')
+              ->constrained()
+              ->onDelete('cascade');
+
+        // Ø§Ù„Ù…Ù†ØªØ¬ Ø§Ù„Ù…ÙØ¨Ù„Øº Ø¹Ù†Ù‡
+        $table->foreignId('produit_id')
+              ->constrained('produits')
+              ->onDelete('cascade');
+
+        // Ø³Ø¨Ø¨ Ø§Ù„Ø¨Ù„Ø§Øº
+        $table->text('raison');
+
+        // Ø­Ø§Ù„Ø© Ø§Ù„Ø¨Ù„Ø§Øº
+        $table->enum('statut', ['en_attente', 'accepte', 'refuse'])
+              ->default('en_attente');
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ¢Ø®Ø± ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('signalements');
+    }
+}
+
+
+
+===== 2026_07_17_134341_create_journaux_audit_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateJournauxAuditTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+   {
+    Schema::create('journaux_audit', function (Blueprint $table) {
+
+        // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+        $table->id();
+
+        // Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø§Ù„Ø°ÙŠ Ù‚Ø§Ù… Ø¨Ø§Ù„Ø¹Ù…Ù„ÙŠØ©
+        $table->foreignId('user_id')
+              ->nullable()
+              ->constrained()
+              ->nullOnDelete();
+
+        // Ø§Ø³Ù… Ø§Ù„Ø¹Ù…Ù„ÙŠØ©
+        $table->string('action');
+
+        // Ø§Ø³Ù… Ø§Ù„Ø¬Ø¯ÙˆÙ„ Ø§Ù„Ù…ØªØ£Ø«Ø±
+        $table->string('table_concernee');
+
+        // Ù…Ø¹Ø±Ù Ø§Ù„Ø³Ø¬Ù„ Ø§Ù„Ù…ØªØ£Ø«Ø±
+        $table->unsignedBigInteger('record_id')->nullable();
+
+        // ØªÙØ§ØµÙŠÙ„ Ø¥Ø¶Ø§ÙÙŠØ©
+        $table->text('details')->nullable();
+
+        // Ø¹Ù†ÙˆØ§Ù† IP
+        $table->string('ip_address', 45)->nullable();
+
+        // Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ù…ØªØµÙØ­
+        $table->text('user_agent')->nullable();
+
+        // ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ¢Ø®Ø± ØªØ¹Ø¯ÙŠÙ„
+        $table->timestamps();
+    });
+}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('journaux_audit');
+    }
+}
+
+
+
+===== 2026_07_17_140604_add_fields_to_users_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class AddFieldsToUsersTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        
+    Schema::table('users', function (Blueprint $table) {
+
+        // Ø¯ÙˆØ± Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
+        $table->enum('role', ['super_admin', 'vendeur'])
+              ->default('vendeur')
+              ->after('email');
+
+        // Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ
+        $table->string('telephone', 20)
+              ->nullable()
+              ->after('role');
+
+        // Ù‡Ù„ Ø§Ù„Ø­Ø³Ø§Ø¨ Ù…ÙØ¹Ù„ØŸ
+        $table->boolean('actif')
+              ->default(true)
+              ->after('telephone');
+
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+    Schema::table('users', function (Blueprint $table) {
+
+        $table->dropColumn([
+            'role',
+            'telephone',
+            'actif'
+        ]);
+
+    });
+}
+}
+
+
+
+===== 2026_07_21_132738_replace_ville_with_emplacement_in_boutiques_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class ReplaceVilleWithEmplacementInBoutiquesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('boutiques', function (Blueprint $table) {
+
+            // Ø¥Ø¶Ø§ÙØ© Ø¹Ù†ÙˆØ§Ù† Ø§Ù„Ø¨ÙˆØªÙŠÙƒ Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ø±ÙƒØ² Ø§Ù„ØªØ¬Ø§Ø±ÙŠ
+            $table->string('emplacement')->after('adresse');
+
+            // Ø­Ø°Ù Ø¹Ù…ÙˆØ¯ Ø§Ù„Ù…Ø¯ÙŠÙ†Ø© Ù„Ø£Ù†Ù‡ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹ ÙƒØ§Ù…Ù„ Ø¯Ø§Ø®Ù„ Ù…ÙƒÙ†Ø§Ø³
+            $table->dropColumn('ville');
+
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('boutiques', function (Blueprint $table) {
+
+            // Ù†Ø±Ø¬Ø¹Ùˆ Ø¹Ù…ÙˆØ¯ Ø§Ù„Ù…Ø¯ÙŠÙ†Ø© Ø¥Ø°Ø§ Ø¯Ø±Ù†Ø§ rollback
+            $table->string('ville')->after('adresse');
+
+            // Ù†Ø­Ø°Ù emplacement
+            $table->dropColumn('emplacement');
+
+        });
+    }
+}
+
+
+===== 2026_07_31_163429_create_demandes_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateDemandesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('demandes', function (Blueprint $table) {
+
+            // Ø§Ù„Ù…ÙØªØ§Ø­ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ
+            $table->id();
+
+            // Ø§Ù„Ù…Ù†ØªØ¬ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨
+            $table->foreignId('produit_id')
+                  ->constrained('produits')
+                  ->onDelete('cascade');
+
+            // Ø§Ù„Ø¨ÙˆØªÙŠÙƒ Ø¯ÙŠØ§Ù„ Ø§Ù„Ù…Ù†ØªØ¬
+            $table->foreignId('boutique_id')
+                  ->constrained('boutiques')
+                  ->onDelete('cascade');
+
+            // Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø²Ø¨ÙˆÙ†
+            $table->string('nom_client');
+
+            $table->string('telephone',20);
+
+            $table->string('email')->nullable();
+
+            // Ø§Ù„ÙƒÙ…ÙŠØ©
+            $table->integer('quantite')->default(1);
+
+            // Ø±Ø³Ø§Ù„Ø© Ø§Ø®ØªÙŠØ§Ø±ÙŠØ©
+            $table->text('message')->nullable();
+
+            // Ø­Ø§Ù„Ø© Ø§Ù„Ø·Ù„Ø¨
+            $table->enum('statut',[
+                'en_attente',
+                'acceptee',
+                'refusee'
+            ])->default('en_attente');
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('demandes');
+    }
+}
+
+
+===== 2026_08_08_153226_add_user_id_to_demandes_table.php =====
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class AddUserIdToDemandesTable extends Migration
+{
+    public function up()
+    {
+        Schema::table('demandes', function (Blueprint $table) {
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('demandes', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
+    }
+}
