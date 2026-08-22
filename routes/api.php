@@ -46,6 +46,7 @@ Route::apiResource('produits', ProduitController::class)->only([
 
 // Demandes (Visitor)
 Route::post('/demandes', [DemandeController::class, 'store']);
+Route::delete('/demandes/{token}/annuler', [DemandeController::class, 'cancel']);
 
 // Signalements (Visitor)
 Route::post('/signalements', [SignalementController::class, 'store']);

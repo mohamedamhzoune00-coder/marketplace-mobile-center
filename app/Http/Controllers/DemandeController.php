@@ -8,53 +8,37 @@ use App\Models\Produit;
 
 class DemandeController extends Controller
 {
-   // عرض الطلبات
-public function index()
-{
-    // التحقق من الصلاحية
-    $this->authorize('viewAny', Demande::class);
+    // عرض الطلبات (vendeur/admin فقط)
+    public function index()
+    {
+        $this->authorize('viewAny', Demande::class);
 
-    // جلب المستخدم الحالي
-    $user = auth()->user();
+        $user = auth()->user();
 
-    // Super Admin يقدر يشوف جميع الطلبات
-    if ($user->role === 'super_admin') {
+        if ($user->role === 'super_admin') {
+            return Demande::with(['produit', 'boutique'])
+                ->orderBy('id', 'desc')
+                ->paginate(10);
+        }
 
-        return Demande::with(['produit', 'boutique', 'user'])
-            ->orderBy('id', 'desc')
-            ->paginate(10);
-    }
-
-    // Vendeur يشوف غير الطلبات ديال Boutique ديالو
-    if ($user->role === 'vendeur') {
-
-        return Demande::with(['produit', 'boutique', 'user'])
+        return Demande::with(['produit', 'boutique'])
             ->where('boutique_id', $user->boutique->id)
             ->orderBy('id', 'desc')
             ->paginate(10);
     }
 
-    // احتياطياً، إلا وصل شي role آخر لهنا
-    return response()->json([
-        'message' => 'Accès non autorisé'
-    ], 403);
-}
-
-    // إنشاء طلب جديد
+    // إنشاء طلب جديد — مجهول بالكامل، بلا تسجيل دخول
     public function store(Request $request)
     {
-        $this->authorize('create', Demande::class);
         $request->validate([
             'produit_id' => 'required|exists:produits,id',
             'nom_client' => 'required|string|max:255',
-            'telephone' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'quantite' => 'required|integer|min:1',
-            'message' => 'nullable|string',
-            // 'statut' => 'in:en_attente,acceptee,refusee',
+            'telephone'  => 'required|string|max:20',
+            'email'      => 'nullable|email|max:255',
+            'quantite'   => 'required|integer|min:1',
+            'message'    => 'nullable|string',
         ]);
 
-        // جلب المنتج
         $produit = Produit::findOrFail($request->produit_id);
 
         $demande = Demande::create([
@@ -66,65 +50,51 @@ public function index()
             'quantite'    => $request->quantite,
             'message'     => $request->message,
             'statut'      => 'en_attente',
-            'user_id' => auth()->id(),
         ]);
 
         return response()->json([
-            'message' => 'Demande créée avec succès',
-            'data' => $demande->load(['produit', 'boutique'])
+            'message' => 'Demande créée avec succès. Gardez ce token pour annuler votre demande si besoin.',
+            'token'   => $demande->token,
+            'data'    => $demande->load(['produit', 'boutique']),
         ], 201);
     }
 
-    // عرض طلب واحد
+    // إلغاء الطلب عبر الـ token (بلا تسجيل دخول)
+    public function cancel(Request $request, $token)
+    {
+        $demande = Demande::where('token', $token)->firstOrFail();
+
+        if ($demande->statut !== 'en_attente') {
+            return response()->json([
+                'message' => 'Impossible d\'annuler : la demande est déjà traitée.'
+            ], 422);
+        }
+
+        $demande->delete();
+
+        return response()->json([
+            'message' => 'Demande annulée avec succès.'
+        ]);
+    }
+
     public function show($id)
     {
         $demande = Demande::with(['produit', 'boutique'])->findOrFail($id);
-
-        if (!$demande) {
-            return response()->json([
-                'message' => 'Demande introuvable'
-            ], 404);
-        }
-
+        $this->authorize('view', $demande);
         return response()->json($demande);
     }
 
-    // تعديل طلب
+    // تعديل حالة الطلب (vendeur/admin: accepter/refuser)
     public function update(Request $request, $id)
     {
-        $demande = Demande::find($id);
-
-        if (!$demande) {
-            return response()->json([
-                'message' => 'Demande introuvable'
-            ], 404);
-        }
+        $demande = Demande::findOrFail($id);
         $this->authorize('update', $demande);
 
         $request->validate([
-            'produit_id' => 'sometimes|exists:produits,id',
-            'nom_client' => 'sometimes|string|max:255',
-            'telephone' => 'sometimes|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'quantite' => 'sometimes|integer|min:1',
-            'message' => 'nullable|string',
-            // الزائر ما خاصوش يحدد الحالة
-            // الحالة غادي تكون دائما en_attente
+            'statut' => 'required|in:en_attente,acceptee,refusee',
         ]);
 
-        if ($request->has('produit_id')) {
-            $produit = Produit::findOrFail($request->produit_id);
-
-            $demande->produit_id = $produit->id;
-            $demande->boutique_id = $produit->boutique_id;
-        }
-
-        $demande->nom_client = $request->nom_client ?? $demande->nom_client;
-        $demande->telephone = $request->telephone ?? $demande->telephone;
-        $demande->email = $request->email ?? $demande->email;
-        $demande->quantite = $request->quantite ?? $demande->quantite;
-        $demande->message = $request->message ?? $demande->message;
-
+        $demande->statut = $request->statut;
         $demande->save();
 
         return response()->json([
@@ -133,21 +103,12 @@ public function index()
         ]);
     }
 
-    // حذف طلب
     public function destroy($id)
     {
-        $demande = Demande::find($id);
-
-        if (!$demande) {
-            return response()->json([
-                'message' => 'Demande introuvable'
-            ], 404);
-        }
+        $demande = Demande::findOrFail($id);
         $this->authorize('delete', $demande);
         $demande->delete();
 
-        return response()->json([
-            'message' => 'Demande supprimée avec succès'
-        ]);
+        return response()->json(['message' => 'Demande supprimée avec succès']);
     }
 }

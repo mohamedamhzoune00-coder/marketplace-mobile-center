@@ -10,7 +10,6 @@ class Demande extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'produit_id',
         'boutique_id',
         'nom_client',
@@ -19,21 +18,23 @@ class Demande extends Model
         'quantite',
         'message',
         'statut',
+        'token',
     ];
 
-    // الطلب تابع للمستخدم لي دارو
-    public function user()
+    protected static function boot()
     {
-        return $this->belongsTo(User::class);
+        parent::boot();
+
+        static::creating(function ($demande) {
+            $demande->token = (string) \Illuminate\Support\Str::uuid();
+        });
     }
 
-    // الطلب تابع لمنتج واحد
     public function produit()
     {
         return $this->belongsTo(Produit::class);
     }
 
-    // الطلب تابع لبوتيك واحد
     public function boutique()
     {
         return $this->belongsTo(Boutique::class);
