@@ -24,7 +24,7 @@ class AuthController extends Controller
             'email'      => $request->email,
             'password'   => Hash::make($request->password),
             'telephone'  => $request->telephone,
-            'role'       => 'vendeur', // أي مستخدم جديد كيولي vendeur
+            'role' => 'visiteur', // default role dyal aya tsjil 3omoumi
             'actif'      => true,
         ]);
 

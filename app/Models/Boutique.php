@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\HorairesBoutique;
 use App\Models\Demande;
+use App\Models\Produit;
 
 class Boutique extends Model
 {
@@ -28,18 +29,28 @@ class Boutique extends Model
         'actif',
 
     ];
+
     // العلاقة: هاد البوتيك تابع لمستخدم واحد
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     // العلاقة: البوتيك عندو بزاف ديال أوقات العمل
     public function horaires()
     {
         return $this->hasMany(HorairesBoutique::class);
     }
+
+    // العلاقة: البوتيك عندها بزاف ديال الطلبات
     public function demandes()
-{
-    return $this->hasMany(Demande::class);
-}
+    {
+        return $this->hasMany(Demande::class);
+    }
+
+    // العلاقة: البوتيك عندها بزاف ديال المنتجات
+    public function produits()
+    {
+        return $this->hasMany(Produit::class);
+    }
 }

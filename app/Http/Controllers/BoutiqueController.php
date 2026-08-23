@@ -14,13 +14,19 @@ class BoutiqueController extends Controller
         return Boutique::paginate(10);
     }
 
-    // إنشاء بوتيك جديد
+  // إنشاء بوتيك جديد
     public function store(Request $request)
     {
-        // التحقق من الصلاحية
         $this->authorize('create', Boutique::class);
 
-        // التحقق من صحة البيانات
+        // ghi vendeur wa7d = boutique wa7da, khass n check qbel manzido
+        $bou7tiqueMawjouda = Boutique::where('user_id', auth()->id())->first();
+        if ($bou7tiqueMawjouda) {
+            return response()->json([
+                'message' => 'Vous possédez déjà une boutique.'
+            ], 422);
+        }
+
         $request->validate([
             'nom'          => 'required|string|max:255',
             'description'  => 'nullable|string',
@@ -32,9 +38,8 @@ class BoutiqueController extends Controller
             'couverture'   => 'nullable|string',
         ]);
 
-        // إنشاء البوتيك وربطه بالمستخدم الحالي
         $boutique = Boutique::create([
-            'user_id'      => auth()->id(),
+            'user_id'      => auth()->id(), // dima mn authenticated user
             'nom'          => $request->nom,
             'description'  => $request->description,
             'telephone'    => $request->telephone,

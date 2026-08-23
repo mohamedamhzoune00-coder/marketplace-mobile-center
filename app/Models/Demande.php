@@ -10,6 +10,7 @@ class Demande extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'produit_id',
         'boutique_id',
         'nom_client',
@@ -18,16 +19,11 @@ class Demande extends Model
         'quantite',
         'message',
         'statut',
-        'token',
     ];
 
-    protected static function boot()
+    public function user()
     {
-        parent::boot();
-
-        static::creating(function ($demande) {
-            $demande->token = (string) \Illuminate\Support\Str::uuid();
-        });
+        return $this->belongsTo(User::class);
     }
 
     public function produit()

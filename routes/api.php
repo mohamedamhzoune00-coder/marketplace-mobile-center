@@ -44,9 +44,6 @@ Route::apiResource('produits', ProduitController::class)->only([
     'show'
 ]);
 
-// Demandes (Visitor)
-Route::post('/demandes', [DemandeController::class, 'store']);
-Route::delete('/demandes/{token}/annuler', [DemandeController::class, 'cancel']);
 
 // Signalements (Visitor)
 Route::post('/signalements', [SignalementController::class, 'store']);
@@ -92,9 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('horaires-boutiques', HorairesBoutiqueController::class);
 
     // Demandes
-    Route::apiResource('demandes', DemandeController::class)->except([
-        'store'
-    ]);
+   Route::post('/demandes', [DemandeController::class, 'store']);
+Route::apiResource('demandes', DemandeController::class)->except(['store']);
+Route::patch('/demandes/{demande}/accepter', [DemandeController::class, 'accept']);
+Route::patch('/demandes/{demande}/refuser', [DemandeController::class, 'refuse']);
 
     // Signalements
     Route::apiResource('signalements', SignalementController::class)->except([
