@@ -32,10 +32,56 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
+   public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (\Illuminate\Validation\ValidationException $e, $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Erreur de validation',
+                    'errors'  => $e->errors(),
+                ], 422);
+            }
+        });
+
+        $this->renderable(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Non authentifié',
+                ], 401);
+            }
+        });
+
+        $this->renderable(function (\Illuminate\Auth\Access\AuthorizationException $e, $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Action non autorisée',
+                ], 403);
+            }
+        });
+
+        $this->renderable(function (\Illuminate\Database\Eloquent\ModelNotFoundException $e, $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Ressource introuvable',
+                ], 404);
+            }
+        });
+
+        $this->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Route introuvable',
+                ], 404);
+            }
+        });
+
+        $this->renderable(function (\Throwable $e, $request) {
+            if (($request->expectsJson() || $request->is('api/*')) && !app()->environment('local')) {
+                // production: makanbayntch stack trace 7ssasa
+                return response()->json([
+                    'message' => 'Une erreur est survenue.',
+                ], 500);
+            }
         });
     }
 }

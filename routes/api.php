@@ -46,7 +46,7 @@ Route::apiResource('produits', ProduitController::class)->only([
 
 
 // Signalements (Visitor)
-Route::post('/signalements', [SignalementController::class, 'store']);
+
 
 
 /*
@@ -95,6 +95,7 @@ Route::patch('/demandes/{demande}/accepter', [DemandeController::class, 'accept'
 Route::patch('/demandes/{demande}/refuser', [DemandeController::class, 'refuse']);
 
     // Signalements
+    Route::post('/signalements', [SignalementController::class, 'store']);
     Route::apiResource('signalements', SignalementController::class)->except([
         'store'
     ]);

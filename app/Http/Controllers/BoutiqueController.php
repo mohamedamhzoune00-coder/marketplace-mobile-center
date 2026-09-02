@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Boutique;
+use App\Services\AuditLogger;
+use App\Http\Resources\BoutiqueResource;
 
 class BoutiqueController extends Controller
 {
     // عرض جميع البوتيكات
     public function index()
     {
-          $this->authorize('viewAny', Boutique::class);
-        return Boutique::paginate(10);
+        $this->authorize('viewAny', Boutique::class);
+       return BoutiqueResource::collection(Boutique::paginate(10));
     }
 
-  // إنشاء بوتيك جديد
+    // إنشاء بوتيك جديد
     public function store(Request $request)
     {
         $this->authorize('create', Boutique::class);
@@ -50,10 +52,11 @@ class BoutiqueController extends Controller
             'couverture'   => $request->couverture,
             'actif'        => true,
         ]);
+        AuditLogger::log('create_boutique', 'boutiques', $boutique->id, 'Boutique créée');
 
         return response()->json([
             'message' => 'Boutique créée avec succès',
-            'data'    => $boutique
+            'data'    => new BoutiqueResource($boutique)
         ], 201);
     }
 
@@ -70,7 +73,7 @@ class BoutiqueController extends Controller
 
         $this->authorize('view', $boutique);
 
-        return response()->json($boutique);
+        return response()->json(['data' => new BoutiqueResource($boutique)]);
     }
 
     // تعديل بوتيك
@@ -111,10 +114,11 @@ class BoutiqueController extends Controller
         $boutique->actif = $request->actif ?? $boutique->actif;
 
         $boutique->save();
+        AuditLogger::log('update_boutique', 'boutiques', $boutique->id, 'Boutique modifiée');
 
         return response()->json([
             'message' => 'Boutique mise à jour avec succès',
-            'data'    => $boutique
+            'data'    => new BoutiqueResource($boutique)
         ]);
     }
 
@@ -132,6 +136,7 @@ class BoutiqueController extends Controller
         // التحقق من الصلاحية
         $this->authorize('delete', $boutique);
 
+        AuditLogger::log('delete_boutique', 'boutiques', $boutique->id, 'Boutique supprimée');
         $boutique->delete();
 
         return response()->json([

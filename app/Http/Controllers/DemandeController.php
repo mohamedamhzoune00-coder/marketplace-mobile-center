@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Demande;
+use Illuminate\Support\Facades\DB;
 use App\Models\Produit;
+use App\Services\AuditLogger;
+use App\Http\Resources\DemandeResource;
 
 class DemandeController extends Controller
 {
@@ -15,8 +18,10 @@ class DemandeController extends Controller
         $user = auth()->user();
 
         if ($user->role === 'super_admin') {
-            return Demande::with(['produit', 'boutique', 'user'])
-                ->orderBy('id', 'desc')->paginate(10);
+            return DemandeResource::collection(
+                Demande::with(['produit', 'boutique', 'user'])
+                    ->orderBy('id', 'desc')->paginate(10)
+            );
         }
 
         // vendeur ma3ndouch boutique bade7 -> ma3ndouch demandes ychouf
@@ -24,9 +29,11 @@ class DemandeController extends Controller
             return response()->json(['message' => 'Vous n\'avez pas encore de boutique'], 422);
         }
 
-        return Demande::with(['produit', 'boutique', 'user'])
-            ->where('boutique_id', $user->boutique->id)
-            ->orderBy('id', 'desc')->paginate(10);
+        return DemandeResource::collection(
+            Demande::with(['produit', 'boutique', 'user'])
+                ->where('boutique_id', $user->boutique->id)
+                ->orderBy('id', 'desc')->paginate(10)
+        );
     }
 
     // إنشاء طلب: khass visiteur ykon connecté (auth), user_id kaykhrej mn token, ma tathiqch f input
@@ -46,6 +53,17 @@ class DemandeController extends Controller
         // njibo produit bach n3rfo l boutique_id (ma nthiqch fih men client)
         $produit = Produit::findOrFail($request->produit_id);
 
+        // n verifiw: produit disponible, boutique active, stock kafi
+        if (!$produit->disponible) {
+            return response()->json(['message' => 'Ce produit n\'est plus disponible.'], 422);
+        }
+        if (!$produit->boutique->actif) {
+            return response()->json(['message' => 'Cette boutique n\'est plus active.'], 422);
+        }
+        if ($request->quantite > $produit->stock) {
+            return response()->json(['message' => 'Stock insuffisant.'], 422);
+        }
+
         $demande = Demande::create([
             'user_id'     => auth()->id(), // dima mn authenticated user, machi mn request
             'produit_id'  => $produit->id,
@@ -60,7 +78,7 @@ class DemandeController extends Controller
 
         return response()->json([
             'message' => 'Demande créée avec succès',
-            'data' => $demande->load(['produit', 'boutique']),
+            'data' => new DemandeResource($demande->load(['produit', 'boutique'])),
         ], 201);
     }
 
@@ -69,7 +87,7 @@ class DemandeController extends Controller
     {
         $demande = Demande::with(['produit', 'boutique', 'user'])->findOrFail($id);
         $this->authorize('view', $demande);
-        return response()->json($demande);
+        return response()->json(['data' => new DemandeResource($demande)]);
     }
 
     // تعديل الطلب: ghi visiteur (mol demande) o ghi ila mazal en_attente
@@ -95,7 +113,7 @@ class DemandeController extends Controller
 
         return response()->json([
             'message' => 'Demande mise à jour avec succès',
-            'data' => $demande->fresh()->load(['produit', 'boutique'])
+            'data' => new DemandeResource($demande->fresh()->load(['produit', 'boutique']))
         ]);
     }
 
@@ -113,9 +131,28 @@ class DemandeController extends Controller
     {
         $demande = Demande::findOrFail($id);
         $this->authorize('accept', $demande);
-        $demande->statut = 'acceptee';
-        $demande->save();
-        return response()->json(['message' => 'Demande acceptée', 'data' => $demande]);
+
+        // transaction: bach machi 2 demandes yban9so f nfs stock f nfs lwe9t
+        return DB::transaction(function () use ($demande) {
+            $produit = Produit::lockForUpdate()->findOrFail($demande->produit_id);
+
+            if ($produit->stock < $demande->quantite) {
+                return response()->json([
+                    'message' => 'Stock insuffisant pour accepter cette demande.'
+                ], 422);
+            }
+
+            $produit->stock -= $demande->quantite;
+            $produit->save();
+
+            $demande->statut = 'acceptee';
+            $demande->save();
+
+            // n sajlo l'audit ghi mnin l3amaliya nja7at b7al
+            AuditLogger::log('accept_demande', 'demandes', $demande->id, 'Demande acceptée');
+
+            return response()->json(['message' => 'Demande acceptée', 'data' => new DemandeResource($demande)]);
+        });
     }
 
     // vendeur/admin kayrfd talab
@@ -123,8 +160,12 @@ class DemandeController extends Controller
     {
         $demande = Demande::findOrFail($id);
         $this->authorize('refuse', $demande);
+
         $demande->statut = 'refusee';
         $demande->save();
-        return response()->json(['message' => 'Demande refusée', 'data' => $demande]);
+
+        AuditLogger::log('refuse_demande', 'demandes', $demande->id, 'Demande refusée');
+
+        return response()->json(['message' => 'Demande refusée', 'data' => new DemandeResource($demande)]);
     }
 }

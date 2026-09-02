@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Produit;
 use App\Models\Boutique;
+use App\Services\AuditLogger;
+use App\Http\Resources\ProduitResource;
 
 class ProduitController extends Controller
 {
@@ -13,9 +15,11 @@ class ProduitController extends Controller
     {
         $this->authorize('viewAny', Produit::class);
 
-        return Produit::with(['boutique', 'category'])
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+        return ProduitResource::collection(
+            Produit::with(['boutique', 'category'])
+                ->orderBy('id', 'desc')
+                ->paginate(10)
+        );
     }
 
     // إنشاء منتج جديد
@@ -40,10 +44,11 @@ class ProduitController extends Controller
         $boutique = Boutique::where('user_id', auth()->id())->first();
 
         // إلى ما عندوش Boutique
+        // machi trusted mn client, kayjbed mn authenticated vendeur
         if (!$boutique) {
             return response()->json([
-                'message' => 'Vous devez créer une boutique avant d’ajouter un produit.'
-            ], 403);
+                'message' => 'Vous n\'avez pas encore de boutique'
+            ], 422);
         }
 
         // إنشاء المنتج
@@ -59,11 +64,11 @@ class ProduitController extends Controller
             'disponible' => $request->disponible ?? true,
             'vues' => 0,
         ]);
-
+        AuditLogger::log('create_produit', 'produits', $produit->id, 'Produit créé');
         // إرجاع النتيجة
         return response()->json([
             'message' => 'Produit créé avec succès',
-            'data' => $produit
+            'data' => new ProduitResource($produit)
         ], 201);
     }
 
@@ -80,9 +85,9 @@ class ProduitController extends Controller
 
         $this->authorize('view', $produit);
 
-        return response()->json(
-            $produit->load(['boutique', 'category', 'images'])
-        );
+        return response()->json([
+            'data' => new ProduitResource($produit->load(['boutique', 'category', 'images']))
+        ]);
     }
 
     // تعديل منتج
@@ -122,10 +127,10 @@ class ProduitController extends Controller
         $produit->disponible = $request->disponible ?? $produit->disponible;
 
         $produit->save();
-
+        AuditLogger::log('update_produit', 'produits', $produit->id, 'Produit mis à jour');
         return response()->json([
             'message' => 'Produit mis à jour avec succès',
-            'data' => $produit
+            'data' => new ProduitResource($produit)
         ]);
     }
     // حذف منتج
@@ -141,7 +146,7 @@ class ProduitController extends Controller
 
         // التحقق من الصلاحية
         $this->authorize('delete', $produit);
-
+        AuditLogger::log('delete_produit', 'produits', $produit->id, 'Produit supprimé');
         // حذف المنتج
         $produit->delete();
 

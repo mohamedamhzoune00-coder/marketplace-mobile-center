@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Signalement;
+use App\Services\AuditLogger;
+use App\Http\Resources\SignalementResource;
 
 class SignalementController extends Controller
 {
@@ -12,22 +14,22 @@ class SignalementController extends Controller
     {
         $this->authorize('viewAny', Signalement::class);
 
-        return Signalement::with(['user', 'produit'])->paginate(10);
+        return SignalementResource::collection(Signalement::with(['user', 'produit'])->paginate(10));
     }
 
     // إنشاء بلاغ جديد
     public function store(Request $request)
     {
-        
 
+        $this->authorize('create', Signalement::class);
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+
             'produit_id' => 'required|exists:produits,id',
             'raison' => 'required|string',
         ]);
 
         $signalement = Signalement::create([
-            'user_id' => $request->user_id,
+            'user_id' => auth()->id(),
             'produit_id' => $request->produit_id,
             'raison' => $request->raison,
             'statut' => 'en_attente',
@@ -35,7 +37,7 @@ class SignalementController extends Controller
 
         return response()->json([
             'message' => 'Signalement créé avec succès',
-            'data' => $signalement->load(['user', 'produit'])
+            'data' => new SignalementResource($signalement->load(['user', 'produit']))
         ], 201);
     }
 
@@ -51,7 +53,7 @@ class SignalementController extends Controller
             ], 404);
         }
         $this->authorize('view', $signalement);
-        return response()->json($signalement);
+        return response()->json(['data' => new SignalementResource($signalement)]);
     }
 
     // تعديل بلاغ
@@ -76,10 +78,10 @@ class SignalementController extends Controller
         $signalement->statut = $request->statut ?? $signalement->statut;
 
         $signalement->save();
-
+        AuditLogger::log('update_signalement', 'signalements', $signalement->id, 'Statut: ' . $signalement->statut);
         return response()->json([
             'message' => 'Signalement mis à jour avec succès',
-            'data' => $signalement->fresh()->load(['user', 'produit'])
+            'data' => new SignalementResource($signalement->load(['user', 'produit']))
         ]);
     }
 
@@ -94,6 +96,7 @@ class SignalementController extends Controller
             ], 404);
         }
         $this->authorize('delete', $signalement);
+        AuditLogger::log('delete_signalement', 'signalements', $signalement->id, 'Signalement supprimé');
         $signalement->delete();
 
         return response()->json([

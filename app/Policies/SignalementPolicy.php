@@ -40,10 +40,10 @@ class SignalementPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    // إنشاء signalement
+    // غير Visitor يقدر ينشئ signalement
     public function create(User $user)
     {
-        return true;
+        return $user->role === 'visiteur';
     }
 
     /**
