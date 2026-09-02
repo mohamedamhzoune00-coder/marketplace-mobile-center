@@ -32,7 +32,7 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-   public function register()
+    public function register()
     {
         $this->renderable(function (\Illuminate\Validation\ValidationException $e, $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
@@ -76,7 +76,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (\Throwable $e, $request) {
-            if (($request->expectsJson() || $request->is('api/*')) && !app()->environment('local')) {
+            if (($request->expectsJson() || $request->is('api/*')) && !app()->environment(['local', 'testing'])) {
                 // production: makanbayntch stack trace 7ssasa
                 return response()->json([
                     'message' => 'Une erreur est survenue.',

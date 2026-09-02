@@ -9,17 +9,15 @@ class AddUserIdToDemandesTable extends Migration
     public function up()
     {
         Schema::table('demandes', function (Blueprint $table) {
-            $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+            // ghi ila l3amoud machi kayn, khal9o kaml (b constraint)
+            if (!Schema::hasColumn('demandes', 'user_id')) {
+                $table->foreignId('user_id')->nullable()->after('id')->constrained()->onDelete('cascade');
+            }
         });
     }
 
     public function down()
     {
-        Schema::table('demandes', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-        });
+        // khaliha khawya - migrations lokhrin howa li kaydiro l fix
     }
 }

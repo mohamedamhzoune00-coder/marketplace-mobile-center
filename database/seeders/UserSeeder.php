@@ -10,25 +10,13 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-
-            // اسم المستخدم
-            'name' => 'Admin',
-
-            // الإيميل
-            'email' => 'admin@test.com',
-
-            // كلمة السر (خاصها تكون مشفرة)
-            'password' => bcrypt('123456'),
-
-            // الدور
-            'role' => 'super_admin',
-
-            // الهاتف
+            'name'      => 'Admin',
+            'email'     => 'admin@test.com',
+            // password kaykhrej mn .env, machi mktoub b sara7a f code
+            'password'  => bcrypt(env('ADMIN_SEED_PASSWORD', 'ChangeMe123!')),
+            'role'      => 'super_admin',
             'telephone' => '0612345678',
-
-            // الحساب مفعل
-            'actif' => true,
-
+            'actif'     => true,
         ]);
     }
 }

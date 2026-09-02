@@ -25,10 +25,9 @@ Route::get('/test', function () {
 });
 
 // Authentication
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
-// Consultation
 // Public
 Route::get('/boutiques', [BoutiqueController::class, 'index']);
 Route::get('/boutiques/{boutique}', [BoutiqueController::class, 'show']);
@@ -89,10 +88,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('horaires-boutiques', HorairesBoutiqueController::class);
 
     // Demandes
-   Route::post('/demandes', [DemandeController::class, 'store']);
-Route::apiResource('demandes', DemandeController::class)->except(['store']);
-Route::patch('/demandes/{demande}/accepter', [DemandeController::class, 'accept']);
-Route::patch('/demandes/{demande}/refuser', [DemandeController::class, 'refuse']);
+    Route::post('/demandes', [DemandeController::class, 'store']);
+    Route::apiResource('demandes', DemandeController::class)->except(['store']);
+    Route::patch('/demandes/{demande}/accepter', [DemandeController::class, 'accept']);
+    Route::patch('/demandes/{demande}/refuser', [DemandeController::class, 'refuse']);
 
     // Signalements
     Route::post('/signalements', [SignalementController::class, 'store']);
