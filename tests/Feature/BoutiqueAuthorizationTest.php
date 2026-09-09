@@ -12,7 +12,7 @@ class BoutiqueAuthorizationTest extends TestCase
     use RefreshDatabase;
 
     // test: vendeur A maqadch y3del boutique dyal vendeur B
-    public function test_vendeur_ma_yaqdarch_ye3del_boutique_khra()
+  public function test_vendeur_ma_yaqdarch_ye3del_boutique_khra()
     {
         $vendeurA = User::factory()->create(['role' => 'vendeur']);
         $vendeurB = User::factory()->create(['role' => 'vendeur']);
@@ -24,14 +24,7 @@ class BoutiqueAuthorizationTest extends TestCase
             ->putJson("/api/boutiques/{$boutiqueB->id}", [
                 'nom' => 'Hacked Name',
             ]);
-        $response = $this->actingAs($vendeurA, 'sanctum')
-            ->putJson("/api/boutiques/{$boutiqueB->id}", [
-                'nom' => 'Hacked Name',
-            ]);
 
-        
-
-        $response->assertStatus(403);
         $response->assertStatus(403); // khass yrfd
     }
 

@@ -1,88 +1,106 @@
-# Marketplace Mobile Center
+# Marketplace Mobile Center — API
 
-Marketplace API built with Laravel 8 for a mobile shopping center in Meknes.
+Backend Laravel 8 API لمنصة Marketplace خاصة بمركز تجاري متخصص في الهواتف والإكسسوارات وخدمات الإصلاح بمكناس.
 
-## Features
-
-- Authentication (Laravel Sanctum)
-- Boutiques Management
-- Products Management
-- Categories
-- Product Images
-- Purchase Requests
-- Product Reports
-- Boutique Working Hours
-- Audit Logs
-
-## Tech Stack
-
-- Laravel 8
-- PHP 8.0
-- MySQL
-- Laravel Sanctum
-- REST API
-
-## Installation
+## 🚀 التثبيت
 
 ```bash
 git clone https://github.com/mohamedamhzoune00-coder/marketplace-mobile-center.git
-
 cd marketplace-mobile-center
-
 composer install
-
 cp .env.example .env
-
 php artisan key:generate
+```
 
+## ⚙️ متغيرات البيئة (.env)
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=marketplace_mobile_center
+DB_USERNAME=root
+DB_PASSWORD=
+
+ADMIN_SEED_PASSWORD=UnMotDePasseFort123!@#
+```
+
+## 🗄️ قاعدة البيانات
+
+```bash
 php artisan migrate
+php artisan db:seed --class=UserSeeder
+php artisan storage:link
+```
 
-php artisan db:seed
+## ▶️ تشغيل المشروع
 
+```bash
 php artisan serve
 ```
 
-## API
+## 🧪 الاختبارات
 
-### Public
-
-- Register
-- Login
-- View Boutiques
-- View Categories
-- View Products
-- Send Purchase Request
-- Report Product
-
-### Protected
-
-- Manage Boutiques
-- Manage Products
-- Manage Images
-- Manage Working Hours
-- Manage Purchase Requests
-- Manage Reports
-- View Audit Logs
-
-## Project Structure
-
-```
-app/
-├── Models
-├── Http/
-│   ├── Controllers
-│   └── Middleware
-├── Policies
-├── Providers
+```bash
+php artisan test
 ```
 
-## Author
+## 👥 الأدوار
 
-**Mohamed Amhzoune**
+| الدور | الصلاحيات |
+|---|---|
+| `super_admin` | إدارة كاملة للمنصة |
+| `vendeur` | يملك بوتيك واحدة، يدير منتجاتها وطلباتها |
+| `visiteur` | يتصفح، يرسل طلبات شراء وبلاغات |
 
-- GitHub: https://github.com/mohamedamhzoune00-coder
-- LinkedIn: https://linkedin.com/in/mohamed-amhzoune-dev
+## 🔑 المصادقة (Sanctum)
 
-## License
+| Endpoint | Method | وصف |
+|---|---|---|
+| `/api/register` | POST | تسجيل حساب جديد (role=visiteur افتراضياً) |
+| `/api/login` | POST | تسجيل الدخول |
+| `/api/logout` | POST | تسجيل الخروج (محمي) |
+| `/api/user` | GET | بيانات المستخدم الحالي (محمي) |
 
-This project is for educational purposes.
+## 📦 Endpoints الرئيسية
+
+### Boutiques
+- `GET /api/boutiques` — عام
+- `GET /api/boutiques/{id}` — عام
+- `POST /api/boutiques` — محمي (vendeur/super_admin)
+- `PUT /api/boutiques/{id}` — محمي (المالك فقط)
+- `DELETE /api/boutiques/{id}` — محمي (super_admin فقط)
+
+### Produits
+- `GET /api/produits` — عام
+- `POST /api/produits` — محمي (vendeur، boutique_id مشتق تلقائياً)
+
+### Demandes (طلبات الشراء)
+- `POST /api/demandes` — محمي (visiteur فقط)
+- `PATCH /api/demandes/{id}/accepter` — محمي (vendeur صاحب المتجر/admin)
+- `PATCH /api/demandes/{id}/refuser` — محمي (vendeur صاحب المتجر/admin)
+
+## 📄 مثال Request/Response
+
+**POST /api/demandes**
+```json
+{
+  "produit_id": 1,
+  "nom_client": "Ahmed",
+  "telephone": "0612345678",
+  "quantite": 2
+}
+```
+
+**Response (201):**
+```json
+{
+  "message": "Demande créée avec succès",
+  "data": {
+    "id": 1,
+    "nom_client": "Ahmed",
+    "statut": "en_attente",
+    "produit": { "id": 1, "nom": "iPhone 13", "prix": "4500.00" }
+  }
+}
+```

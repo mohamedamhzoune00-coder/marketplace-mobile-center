@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BoutiqueFactory extends Factory
@@ -9,6 +10,7 @@ class BoutiqueFactory extends Factory
     public function definition()
     {
         return [
+            'user_id'     => User::factory(), // default: kaykhla9 user jdid ila ma3tinach wa7d
             'nom'         => $this->faker->company,
             'description' => $this->faker->sentence,
             'telephone'   => '06' . $this->faker->numerify('########'),
@@ -16,7 +18,6 @@ class BoutiqueFactory extends Factory
             'adresse'     => $this->faker->streetAddress,
             'emplacement' => 'Bloc ' . $this->faker->randomLetter,
             'actif'       => true,
-            // user_id ma7tinach lina, khass yjib mn 3nd li kaystaamel Factory
         ];
     }
 }
