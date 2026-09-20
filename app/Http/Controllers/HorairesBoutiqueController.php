@@ -21,8 +21,8 @@ class HorairesBoutiqueController extends Controller
 
         $request->validate([
             'jour'            => 'required|string|max:20',
-            'heure_ouverture' => 'nullable|date_format:H:i',
-            'heure_fermeture' => 'nullable|date_format:H:i',
+            'heure_ouverture' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/'],
+            'heure_fermeture' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/'],
             'ferme'           => 'boolean',
         ]);
 
@@ -95,8 +95,8 @@ class HorairesBoutiqueController extends Controller
 
         $request->validate([
             'jour'            => 'sometimes|string|max:20',
-            'heure_ouverture' => 'nullable|date_format:H:i',
-            'heure_fermeture' => 'nullable|date_format:H:i',
+            'heure_ouverture' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/'],
+            'heure_fermeture' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/'],
             'ferme'           => 'boolean',
         ]);
 

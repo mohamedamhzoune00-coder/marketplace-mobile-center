@@ -12,10 +12,8 @@ class BoutiqueController extends Controller
     // عرض جميع البوتيكات
     public function index()
     {
-        $this->authorize('viewAny', Boutique::class);
-       return BoutiqueResource::collection(Boutique::paginate(10));
+        return BoutiqueResource::collection(Boutique::with('user')->paginate(10));
     }
-
     // إنشاء بوتيك جديد
     public function store(Request $request)
     {
@@ -70,8 +68,6 @@ class BoutiqueController extends Controller
                 'message' => 'Boutique introuvable'
             ], 404);
         }
-
-        $this->authorize('view', $boutique);
 
         return response()->json(['data' => new BoutiqueResource($boutique)]);
     }

@@ -13,7 +13,7 @@ class ProduitController extends Controller
     // عرض جميع المنتجات
     public function index()
     {
-        $this->authorize('viewAny', Produit::class);
+        
 
         return ProduitResource::collection(
             Produit::with(['boutique', 'category'])
@@ -83,7 +83,7 @@ class ProduitController extends Controller
             ], 404);
         }
 
-        $this->authorize('view', $produit);
+        // $this->authorize('view', $produit);
 
         return response()->json([
             'data' => new ProduitResource($produit->load(['boutique', 'category', 'images']))

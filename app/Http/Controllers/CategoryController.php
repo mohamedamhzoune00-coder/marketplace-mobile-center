@@ -12,11 +12,8 @@ class CategoryController extends Controller
     // عرض جميع التصنيفات
     public function index()
     {
-        $this->authorize('viewAny', Category::class);
-
         return CategoryResource::collection(Category::orderBy('id', 'desc')->paginate(10));
     }
-
     // إنشاء تصنيف جديد
     public function store(Request $request)
     {
@@ -40,7 +37,7 @@ class CategoryController extends Controller
         AuditLogger::log('create_category', 'categories', $category->id, 'Catégorie créée');
         return response()->json([
             'message' => 'Catégorie créée avec succès',
-           'data' => new CategoryResource($category)
+            'data' => new CategoryResource($category)
         ], 201);
     }
     // عرض تصنيف واحد
@@ -49,12 +46,8 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         if (!$category) {
-            return response()->json([
-                'message' => 'Catégorie introuvable'
-            ], 404);
+            return response()->json(['message' => 'Catégorie introuvable'], 404);
         }
-
-        $this->authorize('view', $category);
 
         return response()->json(['data' => new CategoryResource($category)]);
     }

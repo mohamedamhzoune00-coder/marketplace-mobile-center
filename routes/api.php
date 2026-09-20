@@ -12,6 +12,7 @@ use App\Http\Controllers\HorairesBoutiqueController;
 use App\Http\Controllers\SignalementController;
 use App\Http\Controllers\JournalAuditController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\StatsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,6 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,
 Route::get('/boutiques', [BoutiqueController::class, 'index']);
 Route::get('/boutiques/{boutique}', [BoutiqueController::class, 'show']);
 
-
 Route::apiResource('categories', CategoryController::class)->only([
     'index',
     'show'
@@ -42,11 +42,6 @@ Route::apiResource('produits', ProduitController::class)->only([
     'index',
     'show'
 ]);
-
-
-// Signalements (Visitor)
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +55,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    // Stats Dashboard
+    Route::get('/stats/dashboard', [StatsController::class, 'dashboard']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 

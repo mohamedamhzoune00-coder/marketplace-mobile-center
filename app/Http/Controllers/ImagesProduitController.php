@@ -9,9 +9,20 @@ use App\Http\Resources\ImageResource;
 
 class ImagesProduitController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return ImageResource::collection(ImagesProduit::with('produit')->paginate(20));
+        $query = ImagesProduit::with('produit');
+
+        // ila l client bghi ghi sowar dyal produit mo3ayan
+        if ($request->has('produit_id')) {
+            $query->where('produit_id', $request->produit_id);
+        }
+
+        $images = $query->orderByDesc('principale')
+            ->orderBy('ordre')
+            ->paginate(20);
+
+        return ImageResource::collection($images);
     }
 
     // إضافة صورة جديدة (upload 7a9i9i)
