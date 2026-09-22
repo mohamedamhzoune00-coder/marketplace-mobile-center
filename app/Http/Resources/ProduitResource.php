@@ -31,7 +31,7 @@ class ProduitResource extends JsonResource
                 ];
             }),
             'images' => $this->whenLoaded('images', function () {
-                return $this->images->pluck('chemin');
+                return ImageResource::collection($this->images);
             }),
         ];
     }

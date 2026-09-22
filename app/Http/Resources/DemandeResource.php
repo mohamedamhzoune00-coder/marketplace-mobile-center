@@ -18,10 +18,10 @@ class DemandeResource extends JsonResource
             'statut'     => $this->statut,
             'created_at' => $this->created_at,
             'user' => $this->whenLoaded('user', function () {
-                return [
+                return $this->user ? [
                     'id'   => $this->user->id,
                     'name' => $this->user->name,
-                ];
+                ] : null;
             }),
             'produit' => $this->whenLoaded('produit', function () {
                 return [

@@ -13,6 +13,7 @@ use App\Http\Controllers\SignalementController;
 use App\Http\Controllers\JournalAuditController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\ChatbotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,11 @@ Route::get('/test', function () {
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
+// Chatbot (public — accessible aux visiteurs non connectés)
+Route::post('/chatbot/message', [ChatbotController::class, 'message']);
+Route::get('/chatbot/history', [ChatbotController::class, 'history']);
+Route::delete('/chatbot/history', [ChatbotController::class, 'clear']);
+
 // Public
 Route::get('/boutiques', [BoutiqueController::class, 'index']);
 Route::get('/boutiques/{boutique}', [BoutiqueController::class, 'show']);
@@ -42,6 +48,9 @@ Route::apiResource('produits', ProduitController::class)->only([
     'index',
     'show'
 ]);
+
+// Création de commande / demande accessible aux visiteurs (public)
+Route::post('/demandes', [DemandeController::class, 'store']);
 
 /*
 |--------------------------------------------------------------------------
@@ -86,7 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('horaires-boutiques', HorairesBoutiqueController::class);
 
     // Demandes
-    Route::post('/demandes', [DemandeController::class, 'store']);
     Route::apiResource('demandes', DemandeController::class)->except(['store']);
     Route::patch('/demandes/{demande}/accepter', [DemandeController::class, 'accept']);
     Route::patch('/demandes/{demande}/refuser', [DemandeController::class, 'refuse']);

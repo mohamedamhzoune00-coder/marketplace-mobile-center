@@ -36,49 +36,52 @@ class DemandeController extends Controller
         );
     }
 
-    // إنشاء طلب: khass visiteur ykon connecté (auth), user_id kaykhrej mn token, ma tathiqch f input
+    // إنشاء طلب: mte7 l jami3 l-visiteurs (m3a token wla bla token)
     public function store(Request $request)
     {
-        $this->authorize('create', Demande::class);
+        // nchofo wach user m-connecter (Sanctum wla session)
+        $userId = auth('sanctum')->id() ?? auth()->id();
 
         $request->validate([
             'produit_id' => 'required|exists:produits,id',
             'nom_client' => 'required|string|max:255',
             'telephone'  => 'required|string|max:20',
             'email'      => 'nullable|email|max:255',
-            'quantite'   => 'required|integer|min:1',
+            'quantite'   => 'nullable|integer|min:1',
             'message'    => 'nullable|string',
         ]);
 
-        // njibo produit bach n3rfo l boutique_id (ma nthiqch fih men client)
-        $produit = Produit::findOrFail($request->produit_id);
+        // njibo produit m3a l boutique dyalo
+        $produit = Produit::with('boutique')->findOrFail($request->produit_id);
 
         // n verifiw: produit disponible, boutique active, stock kafi
         if (!$produit->disponible) {
             return response()->json(['message' => 'Ce produit n\'est plus disponible.'], 422);
         }
-        if (!$produit->boutique->actif) {
+        if (!$produit->boutique || !$produit->boutique->actif) {
             return response()->json(['message' => 'Cette boutique n\'est plus active.'], 422);
         }
-        if ($request->quantite > $produit->stock) {
+
+        $quantite = (int) ($request->quantite ?? 1);
+        if ($quantite > $produit->stock) {
             return response()->json(['message' => 'Stock insuffisant.'], 422);
         }
 
         $demande = Demande::create([
-            'user_id'     => auth()->id(), // dima mn authenticated user, machi mn request
+            'user_id'     => $userId, // null ila kan guest, wla ID dyalo ila m-connecter
             'produit_id'  => $produit->id,
             'boutique_id' => $produit->boutique_id,
             'nom_client'  => $request->nom_client,
             'telephone'   => $request->telephone,
             'email'       => $request->email,
-            'quantite'    => $request->quantite,
+            'quantite'    => $quantite,
             'message'     => $request->message,
             'statut'      => 'en_attente', // dima kaybda b had l7ala
         ]);
 
         return response()->json([
             'message' => 'Demande créée avec succès',
-            'data' => new DemandeResource($demande->load(['produit', 'boutique'])),
+            'data' => new DemandeResource($demande->load(['produit', 'boutique', 'user'])),
         ], 201);
     }
 

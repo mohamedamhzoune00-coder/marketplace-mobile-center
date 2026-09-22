@@ -16,7 +16,7 @@ class ProduitController extends Controller
         
 
         return ProduitResource::collection(
-            Produit::with(['boutique', 'category'])
+            Produit::with(['boutique', 'category', 'images'])
                 ->orderBy('id', 'desc')
                 ->paginate(10)
         );
