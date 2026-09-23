@@ -25,7 +25,7 @@ class GroqService
     private function systemPrompt(): string
     {
         return <<<PROMPT
-أنت "Karim Bot"، المساعد الذكي الرسمي لـ Marketplace Mobile Center فـ مكناس (المغرب).
+أنت "Smsar Bot" (سمسار بوت)، المساعد الذكي الرسمي لـ Marketplace Mobile Center فـ مكناس (المغرب).
 
 ## دورك
 - كتعاون الزوار فـ البحث على الهواتف، الإكسسوارات، وخدمات الإصلاح
