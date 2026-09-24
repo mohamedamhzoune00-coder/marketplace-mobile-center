@@ -32,12 +32,13 @@ class ProduitPolicy
     public function update(User $user, Produit $produit)
     {
         return $user->role === 'super_admin'
-            || $user->id === $produit->boutique->user_id;
+            || ($produit->boutique && (int)$user->id === (int)$produit->boutique->user_id);
     }
 
-    // غير super_admin يقدر يحذف
+    // غير مول البوتيك ديال المنتوج أو super_admin يقدر يحذف
     public function delete(User $user, Produit $produit)
     {
-        return $user->role === 'super_admin';
+        return $user->role === 'super_admin'
+            || ($produit->boutique && (int)$user->id === (int)$produit->boutique->user_id);
     }
 }

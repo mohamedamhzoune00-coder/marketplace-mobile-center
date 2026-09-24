@@ -64,7 +64,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message'    => 'Connexion réussie',
-            'user'       => $user,
+            'user'       => $user->load('boutique'),
             'token'      => $token,
             'token_type' => 'Bearer',
         ]);

@@ -20,8 +20,9 @@ class ProduitResource extends JsonResource
             'vues'        => $this->vues,
             'boutique'    => $this->whenLoaded('boutique', function () {
                 return [
-                    'id'  => $this->boutique->id,
-                    'nom' => $this->boutique->nom,
+                    'id'      => $this->boutique->id,
+                    'nom'     => $this->boutique->nom,
+                    'user_id' => $this->boutique->user_id,
                 ];
             }),
             'category' => $this->whenLoaded('category', function () {

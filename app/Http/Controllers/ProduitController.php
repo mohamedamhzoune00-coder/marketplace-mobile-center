@@ -10,15 +10,30 @@ use App\Http\Resources\ProduitResource;
 
 class ProduitController extends Controller
 {
-    // عرض جميع المنتجات
-    public function index()
+    // عرض المنتجات: يدعم التصفية حسب البوتيك أو لوحة تحكم البائع
+    public function index(Request $request)
     {
-        
+        $query = Produit::with(['boutique', 'category', 'images'])
+            ->orderBy('id', 'desc');
+
+        $user = auth('sanctum')->user() ?? auth()->user();
+
+        // إلا كان الطلب جاي من Dashboard أو محدد mine أو الهيدر X-Dashboard
+        if ($request->boolean('dashboard') || $request->boolean('mine') || $request->header('X-Dashboard')) {
+            if ($user && $user->role === 'vendeur') {
+                $boutiqueId = $user->boutique ? $user->boutique->id : 0;
+                $query->where('boutique_id', $boutiqueId);
+            }
+        } elseif ($request->has('boutique_id')) {
+            $query->where('boutique_id', $request->boutique_id);
+        }
+
+        if ($request->has('all') || $request->get('per_page') === 'all') {
+            return ProduitResource::collection($query->get());
+        }
 
         return ProduitResource::collection(
-            Produit::with(['boutique', 'category', 'images'])
-                ->orderBy('id', 'desc')
-                ->paginate(10)
+            $query->paginate($request->get('per_page', 20))
         );
     }
 
